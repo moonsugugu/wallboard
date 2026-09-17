@@ -57,3 +57,10 @@ export type Comment = {
   text: string
   createdAt: number
 }
+
+export type ChatMessage = {
+  id: string
+  author: string
+  text: string
+  createdAt: number
+}

@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import BookmarkletLink from '../components/BookmarkletLink'
 import MoonsuneCredit from '../components/MoonsuneCredit'
 import { addPost, createBoard } from '../lib/db'
-import { parseExportFile } from '../lib/importPadlet'
+import { parseExportFile, type ImportResult } from '../lib/importPadlet'
 import { bookmarkletHref } from '../lib/padletBookmarklet'
+import { clearSavedPadletApiKey, getSavedPadletApiKey, savePadletApiKey } from '../lib/padletApiKey'
+import { importFromPadletApi } from '../lib/padletApiImport'
 import { forgetBoard, getRecentBoards } from '../lib/recentBoards'
 import { normalizeBoardCode } from '../lib/roomCode'
 import type { BoardLayout } from '../types'
@@ -26,7 +28,32 @@ export default function Home() {
   const [importing, setImporting] = useState(false)
   const [importError, setImportError] = useState('')
 
+  const [apiKey, setApiKey] = useState(() => getSavedPadletApiKey())
+  const [rememberApiKey, setRememberApiKey] = useState(() => !!getSavedPadletApiKey())
+  const [apiBoardId, setApiBoardId] = useState('')
+  const [apiImporting, setApiImporting] = useState(false)
+  const [apiImportError, setApiImportError] = useState('')
+
   const [recentBoards, setRecentBoards] = useState(() => getRecentBoards())
+
+  async function applyImportResult(result: ImportResult) {
+    const code = await createBoard(result.title, result.layout, result.columns)
+    for (const post of result.posts) {
+      await addPost(
+        code,
+        {
+          author: post.author,
+          text: post.text,
+          attachmentType: post.attachmentType,
+          attachmentUrl: post.attachmentUrl,
+          color: POST_COLORS.includes(post.color) ? post.color : POST_COLORS[0],
+          column: post.column,
+        },
+        post.createdAt,
+      )
+    }
+    navigate(`/board/${code}`)
+  }
 
   async function handleCreate() {
     if (!title.trim() || creating) return
@@ -56,26 +83,27 @@ export default function Home() {
     setImportError('')
     try {
       const result = await parseExportFile(file)
-      const code = await createBoard(result.title, result.layout, result.columns)
-      for (const post of result.posts) {
-        await addPost(
-          code,
-          {
-            author: post.author,
-            text: post.text,
-            attachmentType: post.attachmentType,
-            attachmentUrl: post.attachmentUrl,
-            color: POST_COLORS.includes(post.color) ? post.color : POST_COLORS[0],
-            column: post.column,
-          },
-          post.createdAt,
-        )
-      }
-      navigate(`/board/${code}`)
+      await applyImportResult(result)
     } catch (e) {
       setImportError(e instanceof Error ? e.message : '가져오기에 실패했습니다.')
     } finally {
       setImporting(false)
+    }
+  }
+
+  async function handleApiImport() {
+    if (!apiKey.trim() || !apiBoardId.trim() || apiImporting) return
+    setApiImporting(true)
+    setApiImportError('')
+    try {
+      if (rememberApiKey) savePadletApiKey(apiKey.trim())
+      else clearSavedPadletApiKey()
+      const result = await importFromPadletApi(apiKey.trim(), apiBoardId.trim())
+      await applyImportResult(result)
+    } catch (e) {
+      setApiImportError(e instanceof Error ? e.message : '가져오기에 실패했습니다.')
+    } finally {
+      setApiImporting(false)
     }
   }
 
@@ -213,6 +241,40 @@ export default function Home() {
           className="btn-outline w-full border-[var(--color-accent)] text-[var(--color-accent)]"
         >
           {importing ? '가져오는 중...' : 'padlet-export.json 업로드'}
+        </button>
+      </section>
+
+      <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
+        <h2 className="mb-1 font-bold">패들렛 API로 가져오기</h2>
+        <p className="mb-4 text-xs leading-relaxed text-[var(--color-sub)]">
+          패들렛 유료 요금제의 API 키가 있다면 북마클릿 없이 바로 가져올 수 있어요. API 키는 이 브라우저에서 패들렛으로 곧장
+          전송되고 문수네집 서버는 거치지 않아요.
+        </p>
+        <input
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="API 키"
+          className="mb-2 w-full rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
+        />
+        <label className="mb-3 flex items-center gap-1.5 text-xs text-[var(--color-sub)]">
+          <input type="checkbox" checked={rememberApiKey} onChange={(e) => setRememberApiKey(e.target.checked)} />
+          이 브라우저에 API 키 기억하기
+        </label>
+        <input
+          value={apiBoardId}
+          onChange={(e) => setApiBoardId(e.target.value)}
+          placeholder="보드 ID 또는 패들렛 링크"
+          className="mb-3 w-full rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
+        />
+        {apiImportError && <p className="mb-3 text-sm text-red-500">{apiImportError}</p>}
+        <button
+          type="button"
+          disabled={!apiKey.trim() || !apiBoardId.trim() || apiImporting}
+          onClick={handleApiImport}
+          className="btn-fill w-full"
+        >
+          {apiImporting ? '가져오는 중...' : 'API로 가져오기'}
         </button>
       </section>
 

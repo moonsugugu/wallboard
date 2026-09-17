@@ -13,7 +13,7 @@ import {
 } from './postgres-firestore'
 import { generateBoardCode } from './roomCode'
 import { getVoterKey } from './voter'
-import type { Board, BoardLayout, Comment, Post, Reaction, ReactionEmoji } from '../types'
+import type { Board, BoardLayout, ChatMessage, Comment, Post, Reaction, ReactionEmoji } from '../types'
 
 const db = null // postgres-firestore 어댑터는 db 인자를 경로에 쓰지 않으므로 자리표시자
 
@@ -120,6 +120,23 @@ export async function addReaction(code: string, postId: string, emoji: ReactionE
 
 export async function removeReaction(code: string, postId: string, emoji: ReactionEmoji) {
   await deleteDoc(doc(db, 'boards', code, 'reactions', reactionId(postId, emoji)))
+}
+
+// 실시간 채팅: 댓글/반응과 같은 이유로 board 아래 평평한 컬렉션에 둔다.
+export function subscribeChat(code: string, cb: (messages: ChatMessage[]) => void) {
+  const q = query(collection(db, 'boards', code, 'chat'), orderBy('createdAt', 'asc'))
+  return onSnapshot(q, (snap: any) => {
+    cb(snap.docs.map((d: any) => ({ id: d.id, ...d.data() }) as ChatMessage))
+  })
+}
+
+export async function sendChatMessage(code: string, author: string, text: string) {
+  const ref = await addDoc(collection(db, 'boards', code, 'chat'), {
+    author,
+    text,
+    createdAt: serverTimestamp(),
+  })
+  return ref.id
 }
 
 type MineKind = 'posts' | 'comments'

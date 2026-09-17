@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import AddPostModal, { type PostFormValue } from '../components/AddPostModal'
 import BoardSettingsModal from '../components/BoardSettingsModal'
+import ChatPanel from '../components/ChatPanel'
 import ColumnsLayout from '../components/ColumnsLayout'
 import NicknamePrompt from '../components/NicknamePrompt'
 import RowsLayout from '../components/RowsLayout'
@@ -17,7 +18,9 @@ import {
   removePost,
   removeReaction,
   rememberMine,
+  sendChatMessage,
   subscribeBoard,
+  subscribeChat,
   subscribeComments,
   subscribePosts,
   subscribeReactions,
@@ -28,7 +31,7 @@ import { getNickname, hasAskedNickname, setNickname } from '../lib/nickname'
 import { forgetBoard, rememberBoardVisit } from '../lib/recentBoards'
 import { normalizeBoardCode } from '../lib/roomCode'
 import { getVoterKey } from '../lib/voter'
-import type { Board as BoardDoc, Comment, Post, Reaction, ReactionEmoji } from '../types'
+import type { Board as BoardDoc, ChatMessage, Comment, Post, Reaction, ReactionEmoji } from '../types'
 
 type ModalState = { mode: 'add'; column: string | null } | { mode: 'edit'; postId: string; initial: PostFormValue }
 
@@ -41,8 +44,10 @@ export default function Board() {
   const [posts, setPosts] = useState<Post[]>([])
   const [comments, setComments] = useState<Comment[]>([])
   const [reactions, setReactions] = useState<Reaction[]>([])
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
   const [modal, setModal] = useState<ModalState | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
   const [nickname, setNicknameState] = useState(() => getNickname())
   const [nicknameAsked, setNicknameAsked] = useState(() => hasAskedNickname())
 
@@ -51,11 +56,13 @@ export default function Board() {
     const unsubPosts = subscribePosts(boardCode, setPosts)
     const unsubComments = subscribeComments(boardCode, setComments)
     const unsubReactions = subscribeReactions(boardCode, setReactions)
+    const unsubChat = subscribeChat(boardCode, setChatMessages)
     return () => {
       unsubBoard()
       unsubPosts()
       unsubComments()
       unsubReactions()
+      unsubChat()
     }
   }, [boardCode])
 
@@ -183,15 +190,35 @@ export default function Board() {
         <RowsLayout columns={board.columns} posts={posts} actions={actions} onAddTo={(col) => setModal({ mode: 'add', column: col })} />
       )}
 
+      <button
+        type="button"
+        onClick={() => setChatOpen((v) => !v)}
+        className={`fixed bottom-6 z-30 flex h-14 w-14 items-center justify-center rounded-full text-2xl shadow-lg transition-transform duration-150 active:scale-90 ${
+          board.layout === 'wall' ? 'right-24' : 'right-6'
+        } ${chatOpen ? 'bg-black/70 text-white' : 'bg-[var(--color-surface)] text-[var(--color-ink)]'}`}
+        aria-label="실시간 채팅"
+      >
+        💬
+      </button>
+
       {board.layout === 'wall' && (
         <button
           type="button"
           onClick={() => setModal({ mode: 'add', column: null })}
-          className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-bold text-white shadow-lg transition-transform duration-150 active:scale-90"
+          className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-bold text-white shadow-lg transition-transform duration-150 active:scale-90"
           aria-label="포스트잇 추가"
         >
           +
         </button>
+      )}
+
+      {chatOpen && (
+        <ChatPanel
+          messages={chatMessages}
+          defaultAuthor={nickname}
+          onClose={() => setChatOpen(false)}
+          onSend={(author, text) => sendChatMessage(boardCode, author, text)}
+        />
       )}
 
       {modal && (
