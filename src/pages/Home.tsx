@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import BookmarkletLink from '../components/BookmarkletLink'
 import MoonsuneCredit from '../components/MoonsuneCredit'
 import { addPost, createBoard } from '../lib/db'
 import { parseExportFile } from '../lib/importPadlet'
@@ -27,7 +28,7 @@ export default function Home() {
     setCreating(true)
     try {
       const columns =
-        layout === 'shelf'
+        layout !== 'wall'
           ? columnsText
               .split(',')
               .map((c) => c.trim())
@@ -88,23 +89,30 @@ export default function Home() {
           placeholder="제목 (예: 3반 여름방학 계획)"
           className="mb-3 w-full rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
         />
-        <div className="mb-3 flex gap-2">
+        <div className="mb-3 grid grid-cols-3 gap-2">
           <button
             type="button"
             onClick={() => setLayout('wall')}
-            className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${layout === 'wall' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'wall' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
           >
-            담벼락형
+            자유 담벼락
           </button>
           <button
             type="button"
-            onClick={() => setLayout('shelf')}
-            className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium ${layout === 'shelf' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+            onClick={() => setLayout('columns')}
+            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'columns' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
           >
-            테이블형
+            세로 테이블
+          </button>
+          <button
+            type="button"
+            onClick={() => setLayout('rows')}
+            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'rows' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+          >
+            가로 테이블
           </button>
         </div>
-        {layout === 'shelf' && (
+        {layout !== 'wall' && (
           <input
             value={columnsText}
             onChange={(e) => setColumnsText(e.target.value)}
@@ -149,14 +157,12 @@ export default function Home() {
           패들렛은 자동 접속을 막고 있어서, 아래 버튼을 <b>즐겨찾기줄로 드래그</b>해 등록한 뒤 본인 패들렛 보드를 열고
           클릭하면 글·이미지·섹션이 담긴 파일이 다운로드됩니다. 그 파일을 여기 업로드하면 담벼락이 만들어져요.
         </p>
-        <a
+        <BookmarkletLink
           href={bookmarkletHref()}
-          onClick={(e) => e.preventDefault()}
-          draggable
           className="mb-3 inline-flex cursor-grab items-center gap-1.5 rounded-full border-2 border-dashed border-[var(--color-accent)] px-3.5 py-2 text-[13.5px] font-bold text-[var(--color-accent)]"
         >
           📥 담벼락으로 가져오기
-        </a>
+        </BookmarkletLink>
         <p className="mb-3 text-xs text-[var(--color-sub)]">↑ 이 버튼을 즐겨찾기줄로 끌어다 놓으세요 (클릭은 동작하지 않아요)</p>
 
         <input

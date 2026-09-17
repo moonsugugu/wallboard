@@ -1,14 +1,13 @@
 import type { Post } from '../types'
+import type { PostActions } from './postActions'
 import PostCard from './PostCard'
 
 type Props = {
   posts: Post[]
-  isMine: (id: string) => boolean
-  onEdit: (id: string) => void
-  onDelete: (id: string) => void
+  actions: PostActions
 }
 
-export default function WallLayout({ posts, isMine, onEdit, onDelete }: Props) {
+export default function WallLayout({ posts, actions }: Props) {
   if (posts.length === 0) {
     return <p className="py-16 text-center text-[var(--color-sub)]">아직 올라온 포스트잇이 없어요. 오른쪽 아래 + 버튼으로 추가해보세요.</p>
   }
@@ -18,9 +17,10 @@ export default function WallLayout({ posts, isMine, onEdit, onDelete }: Props) {
         <PostCard
           key={post.id}
           post={post}
-          canEdit={isMine(post.id)}
-          onEdit={() => onEdit(post.id)}
-          onDelete={() => onDelete(post.id)}
+          canEdit={actions.isMine(post.id)}
+          onEdit={() => actions.onEdit(post.id)}
+          onDelete={() => actions.onDelete(post.id)}
+          actions={actions}
         />
       ))}
     </div>

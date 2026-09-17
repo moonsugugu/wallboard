@@ -1,16 +1,16 @@
 import type { Post } from '../types'
+import type { PostActions } from './postActions'
 import PostCard from './PostCard'
 
 type Props = {
   columns: string[]
   posts: Post[]
-  isMine: (id: string) => boolean
-  onEdit: (id: string) => void
-  onDelete: (id: string) => void
+  actions: PostActions
   onAddTo: (column: string) => void
 }
 
-export default function ShelfLayout({ columns, posts, isMine, onEdit, onDelete, onAddTo }: Props) {
+// 가로 테이블형: 섹션이 위→아래로 나열되고, 각 섹션 안에서 포스트잇이 좌→우로 나열된다.
+export default function RowsLayout({ columns, posts, actions, onAddTo }: Props) {
   const byColumn = new Map<string, Post[]>(columns.map((c) => [c, []]))
   for (const post of posts) {
     const key = post.column && byColumn.has(post.column) ? post.column : columns[0]
@@ -18,9 +18,9 @@ export default function ShelfLayout({ columns, posts, isMine, onEdit, onDelete, 
   }
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
+    <div className="flex flex-col gap-4">
       {columns.map((col) => (
-        <div key={col} className="w-72 shrink-0 rounded-xl bg-black/[0.03] p-3">
+        <div key={col} className="rounded-xl bg-black/[0.03] p-3">
           <div className="mb-3 flex items-center justify-between">
             <h3 className="truncate text-sm font-bold text-[var(--color-ink)]">{col}</h3>
             <button
@@ -32,15 +32,17 @@ export default function ShelfLayout({ columns, posts, isMine, onEdit, onDelete, 
               +
             </button>
           </div>
-          <div>
+          <div className="flex gap-4 overflow-x-auto pb-1">
             {(byColumn.get(col) || []).map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                canEdit={isMine(post.id)}
-                onEdit={() => onEdit(post.id)}
-                onDelete={() => onDelete(post.id)}
-              />
+              <div key={post.id} className="w-64 shrink-0">
+                <PostCard
+                  post={post}
+                  canEdit={actions.isMine(post.id)}
+                  onEdit={() => actions.onEdit(post.id)}
+                  onDelete={() => actions.onDelete(post.id)}
+                  actions={actions}
+                />
+              </div>
             ))}
           </div>
         </div>

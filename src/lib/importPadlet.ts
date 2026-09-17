@@ -36,7 +36,7 @@ export async function parseExportFile(file: File): Promise<ImportResult> {
     columns?: unknown
     posts: unknown[]
   }
-  const layout: BoardLayout = data.layout === 'shelf' ? 'shelf' : 'wall'
+  const layout: BoardLayout = data.layout === 'columns' || data.layout === 'rows' ? data.layout : 'wall'
   const columns = Array.isArray(data.columns) ? data.columns.filter((c): c is string => typeof c === 'string') : []
   const posts: ImportedPost[] = data.posts.map((p) => {
     const post = p as Record<string, unknown>

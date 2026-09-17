@@ -1,11 +1,16 @@
+import { useState } from 'react'
 import { toEmbeddableVideo } from '../lib/videoEmbed'
 import type { Post } from '../types'
+import CommentSection from './CommentSection'
+import type { PostActions } from './postActions'
+import ReactionBar from './ReactionBar'
 
 type Props = {
   post: Post
   canEdit: boolean
   onEdit: () => void
   onDelete: () => void
+  actions: PostActions
 }
 
 function LinkCard({ url }: { url: string }) {
@@ -44,7 +49,11 @@ function VideoEmbed({ url }: { url: string }) {
   )
 }
 
-export default function PostCard({ post, canEdit, onEdit, onDelete }: Props) {
+export default function PostCard({ post, canEdit, onEdit, onDelete, actions }: Props) {
+  const [showComments, setShowComments] = useState(false)
+  const reactions = actions.reactionsByPost.get(post.id) ?? []
+  const comments = actions.commentsByPost.get(post.id) ?? []
+
   return (
     <div
       className="group relative mb-4 break-inside-avoid rounded-lg border border-black/5 p-4 shadow-sm transition hover:shadow-md"
@@ -77,6 +86,30 @@ export default function PostCard({ post, canEdit, onEdit, onDelete }: Props) {
       {post.attachmentType === 'link' && post.attachmentUrl && <LinkCard url={post.attachmentUrl} />}
       {post.text && <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-black/80">{post.text}</p>}
       <p className="mt-3 text-xs font-medium text-black/40">{post.author || '익명'}</p>
+
+      <div className="mt-2 flex items-center justify-between">
+        <ReactionBar postId={post.id} reactions={reactions} voterKey={actions.voterKey} onToggle={actions.onToggleReaction} />
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            setShowComments((v) => !v)
+          }}
+          className="shrink-0 rounded-full px-1.5 py-0.5 text-xs text-black/40 hover:text-black/70"
+        >
+          💬 {comments.length > 0 ? comments.length : ''}
+        </button>
+      </div>
+
+      {showComments && (
+        <CommentSection
+          postId={post.id}
+          comments={comments}
+          isMine={actions.isMineComment}
+          onAdd={actions.onAddComment}
+          onDelete={actions.onDeleteComment}
+        />
+      )}
     </div>
   )
 }

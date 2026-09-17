@@ -15,7 +15,7 @@ var hashid=(html.match(/wall_hashid=(board_[A-Za-z0-9]+)/)||[])[1];
 var titleEl=document.querySelector('title');
 var title=titleEl?titleEl.textContent.trim():'가져온 담벼락';
 if(!wallId||!hashid){alert('보드 정보를 찾지 못했습니다. 페이지를 새로고침한 뒤 다시 시도해주세요.');return;}
-var layout=fmt==='grid'?'wall':'shelf';
+var layout=fmt==='grid'?'wall':'columns';
 var sectionsRes=await fetch('/api/5/wall_sections?wall_id='+wallId+'&');
 var sectionsJson=await sectionsRes.json();
 var sections=(sectionsJson.data||[]).slice().sort(function(a,b){return a.attributes.sort_index-b.attributes.sort_index;});
@@ -48,12 +48,12 @@ author:a.subject||a.headline||'',
 text:stripHtml(a.body),
 attachmentType:attachmentType,
 attachmentUrl:url||undefined,
-column:layout==='shelf'?(sectionTitleById[String(a.wall_section_id)]||null):null,
+column:layout==='columns'?(sectionTitleById[String(a.wall_section_id)]||null):null,
 color:COLORS[a.color]||'#ffffff',
 createdAt:a.created_at?new Date(a.created_at).getTime():Date.now()
 };
 });
-var result={title:title,layout:layout,columns:layout==='shelf'?sections.map(function(s){return s.attributes.title||'섹션';}):[],posts:posts};
+var result={title:title,layout:layout,columns:layout==='columns'?sections.map(function(s){return s.attributes.title||'섹션';}):[],posts:posts};
 var blob=new Blob([JSON.stringify(result,null,2)],{type:'application/json'});
 var url=URL.createObjectURL(blob);
 var a=document.createElement('a');
