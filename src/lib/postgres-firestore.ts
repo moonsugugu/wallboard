@@ -2,11 +2,14 @@
 // 문수네집 홈서버 범용 문서저장소(api.moonsunezip.com)를 Firestore와 같은 사용감으로 씀.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-const HTTP_BASE =
-  location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-    ? 'http://127.0.0.1:3100'
-    : 'https://api.moonsunezip.com'
-const WS_BASE = HTTP_BASE.replace(/^http/, 'ws')
+// vite dev 서버에서는 같은 오리진으로 보내고, vite proxy가 실제 API로 넘긴다(vite.config.ts 참고).
+// 브라우저가 직접 다른 오리진을 치지 않으므로 api.moonsunezip.com의 CORS 화이트리스트에 걸리지 않는다.
+// 빌드된 앱(운영)에서는 예전과 똑같이 동작한다.
+const SAME_ORIGIN_WS = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}`
+const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+
+const HTTP_BASE = import.meta.env.DEV ? '' : IS_LOCAL ? 'http://127.0.0.1:3100' : 'https://api.moonsunezip.com'
+const WS_BASE = import.meta.env.DEV ? SAME_ORIGIN_WS : HTTP_BASE.replace(/^http/, 'ws')
 
 const clean = (parts: any[]) =>
   parts
@@ -158,6 +161,9 @@ export function onSnapshot(target: DocRef | CollectionRef | QueryRef, next: (sna
   const connect = () => {
     if (closed) return
     ws = new WebSocket(`${WS_BASE}/v1/documents/realtime?scope=${encodeURIComponent(scope)}`)
+    // 연결될 때마다 한 번 다시 읽는다. 소켓이 끊겨 있던 동안의 변경은 푸시로 오지 않으므로,
+    // 이게 없으면 잠깐 끊긴 뒤로 화면이 새로고침할 때까지 계속 옛날 내용으로 남는다.
+    ws.onopen = load
     ws.onmessage = () => {
       clearTimeout(timer)
       timer = setTimeout(load, 40)
