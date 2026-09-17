@@ -56,3 +56,98 @@ body {
     @apply flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition duration-150 hover:bg-black/60 active:scale-90;
   }
 }
+
+/* 홈 화면 히어로 모션그래픽 */
+@keyframes hero-float-a {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-7deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(-3deg);
+  }
+}
+@keyframes hero-float-b {
+  0%,
+  100% {
+    transform: translateY(0) rotate(6deg);
+  }
+  50% {
+    transform: translateY(-28px) rotate(10deg);
+  }
+}
+@keyframes hero-float-c {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(-9deg);
+  }
+}
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes hero-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 122, 89, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(255, 122, 89, 0);
+  }
+}
+@keyframes hero-glow-drift {
+  0%,
+  100% {
+    transform: translate(-8%, -6%) scale(1);
+  }
+  50% {
+    transform: translate(6%, 4%) scale(1.15);
+  }
+}
+
+.hero-sticker {
+  animation-duration: 6s;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+.hero-sticker-a {
+  animation-name: hero-float-a;
+}
+.hero-sticker-b {
+  animation-name: hero-float-b;
+  animation-duration: 7.5s;
+}
+.hero-sticker-c {
+  animation-name: hero-float-c;
+  animation-duration: 5.5s;
+}
+.hero-line {
+  opacity: 0;
+  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.hero-glow {
+  animation: hero-glow-drift 10s ease-in-out infinite;
+}
+.hero-cta-pulse {
+  animation: hero-pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-sticker,
+  .hero-line,
+  .hero-glow,
+  .hero-cta-pulse {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

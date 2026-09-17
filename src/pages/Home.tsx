@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BookmarkletLink from '../components/BookmarkletLink'
+import HeroSection from '../components/HeroSection'
 import MoonsuneCredit from '../components/MoonsuneCredit'
 import { addPost, createBoard } from '../lib/db'
 import { parseExportFile, type ImportResult } from '../lib/importPadlet'
@@ -109,10 +110,7 @@ export default function Home() {
 
   return (
     <div className="mx-auto flex min-h-full max-w-2xl flex-col gap-8 px-4 py-12">
-      <header className="text-center">
-        <h1 className="text-3xl font-extrabold text-[var(--color-ink)]">담벼락</h1>
-        <p className="mt-1 text-[var(--color-sub)]">우리 반 실시간 포스트잇 게시판</p>
-      </header>
+      <HeroSection />
 
       {recentBoards.length > 0 && (
         <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
