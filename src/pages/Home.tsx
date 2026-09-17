@@ -1,41 +1,47 @@
-import { useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BookmarkletLink from '../components/BookmarkletLink'
-import HeroSection from '../components/HeroSection'
+import BoardCard from '../components/BoardCard'
+import CreateBoardModal from '../components/CreateBoardModal'
+import HomeGreeting from '../components/HomeGreeting'
+import HomeSidebar from '../components/HomeSidebar'
+import ImportModal from '../components/ImportModal'
 import MoonsuneCredit from '../components/MoonsuneCredit'
+import { timeAgo } from '../lib/boardTheme'
 import { addPost, createBoard } from '../lib/db'
 import { parseExportFile, type ImportResult } from '../lib/importPadlet'
-import { bookmarkletHref } from '../lib/padletBookmarklet'
-import { clearSavedPadletApiKey, getSavedPadletApiKey, savePadletApiKey } from '../lib/padletApiKey'
 import { importFromPadletApi } from '../lib/padletApiImport'
+import { clearSavedPadletApiKey, getSavedPadletApiKey, savePadletApiKey } from '../lib/padletApiKey'
+import { fetchRecentActivity, type ActivityItem } from '../lib/recentActivity'
 import { forgetBoard, getRecentBoards } from '../lib/recentBoards'
+import { getNickname } from '../lib/nickname'
 import { normalizeBoardCode } from '../lib/roomCode'
 import type { BoardLayout } from '../types'
 import { POST_COLORS } from '../types'
 
-const LAYOUT_LABEL: Record<BoardLayout, string> = { wall: '자유 담벼락', columns: '세로 테이블', rows: '가로 테이블' }
-
 export default function Home() {
   const navigate = useNavigate()
+  const nickname = getNickname()
 
-  const [title, setTitle] = useState('')
-  const [layout, setLayout] = useState<BoardLayout>('wall')
-  const [columnsText, setColumnsText] = useState('섹션 1, 섹션 2, 섹션 3')
-  const [creating, setCreating] = useState(false)
-
+  const [search, setSearch] = useState('')
   const [joinCode, setJoinCode] = useState('')
+  const [recentBoards, setRecentBoards] = useState(() => getRecentBoards())
+  const [activity, setActivity] = useState<ActivityItem[]>([])
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
+  const [creating, setCreating] = useState(false)
   const [importing, setImporting] = useState(false)
   const [importError, setImportError] = useState('')
-
-  const [apiKey, setApiKey] = useState(() => getSavedPadletApiKey())
-  const [rememberApiKey, setRememberApiKey] = useState(() => !!getSavedPadletApiKey())
-  const [apiBoardId, setApiBoardId] = useState('')
   const [apiImporting, setApiImporting] = useState(false)
   const [apiImportError, setApiImportError] = useState('')
 
-  const [recentBoards, setRecentBoards] = useState(() => getRecentBoards())
+  useEffect(() => {
+    fetchRecentActivity().then(setActivity).catch(() => setActivity([]))
+  }, [])
+
+  const visibleBoards = recentBoards.filter(
+    (b) => !search.trim() || b.title.toLowerCase().includes(search.trim().toLowerCase()) || b.code.includes(search.trim().toUpperCase()),
+  )
 
   async function applyImportResult(result: ImportResult) {
     const code = await createBoard(result.title, result.layout, result.columns)
@@ -56,18 +62,11 @@ export default function Home() {
     navigate(`/board/${code}`)
   }
 
-  async function handleCreate() {
-    if (!title.trim() || creating) return
+  async function handleCreate(title: string, layout: BoardLayout, columns: string[]) {
+    if (creating) return
     setCreating(true)
     try {
-      const columns =
-        layout !== 'wall'
-          ? columnsText
-              .split(',')
-              .map((c) => c.trim())
-              .filter(Boolean)
-          : []
-      const code = await createBoard(title.trim(), layout, columns)
+      const code = await createBoard(title, layout, columns)
       navigate(`/board/${code}`)
     } finally {
       setCreating(false)
@@ -83,8 +82,7 @@ export default function Home() {
     setImporting(true)
     setImportError('')
     try {
-      const result = await parseExportFile(file)
-      await applyImportResult(result)
+      await applyImportResult(await parseExportFile(file))
     } catch (e) {
       setImportError(e instanceof Error ? e.message : '가져오기에 실패했습니다.')
     } finally {
@@ -92,15 +90,14 @@ export default function Home() {
     }
   }
 
-  async function handleApiImport() {
-    if (!apiKey.trim() || !apiBoardId.trim() || apiImporting) return
+  async function handleApiImport(apiKey: string, boardId: string, remember: boolean) {
+    if (apiImporting) return
     setApiImporting(true)
     setApiImportError('')
     try {
-      if (rememberApiKey) savePadletApiKey(apiKey.trim())
+      if (remember) savePadletApiKey(apiKey)
       else clearSavedPadletApiKey()
-      const result = await importFromPadletApi(apiKey.trim(), apiBoardId.trim())
-      await applyImportResult(result)
+      await applyImportResult(await importFromPadletApi(apiKey, boardId))
     } catch (e) {
       setApiImportError(e instanceof Error ? e.message : '가져오기에 실패했습니다.')
     } finally {
@@ -109,174 +106,124 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto flex min-h-full max-w-2xl flex-col gap-8 px-4 py-12">
-      <HeroSection />
+    <div className="mx-auto flex min-h-full max-w-6xl gap-8 px-4 py-8">
+      <HomeSidebar
+        active="home"
+        onNavigate={(key) => {
+          if (key === 'import') setImportOpen(true)
+          if (key === 'boards') document.getElementById('my-boards')?.scrollIntoView({ behavior: 'smooth' })
+        }}
+      />
 
-      {recentBoards.length > 0 && (
-        <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
-          <h2 className="mb-4 font-bold">최근 담벼락</h2>
-          <ul className="space-y-2">
-            {recentBoards.map((b) => (
-              <li key={b.code} className="group flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => navigate(`/board/${b.code}`)}
-                  className="flex-1 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-left text-sm transition active:scale-[0.98] hover:border-[var(--color-accent)]"
-                >
-                  <span className="font-semibold">{b.title}</span>
-                  <span className="ml-2 text-xs text-[var(--color-sub)]">
-                    {LAYOUT_LABEL[b.layout]} · {b.code}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
+      <main className="flex min-w-0 flex-1 flex-col gap-6">
+        <HomeGreeting nickname={nickname} search={search} onSearch={setSearch} />
+
+        <section className="flex flex-col gap-3 rounded-3xl bg-[var(--color-surface)] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-bold text-[var(--color-ink)]">코드로 입장</p>
+            <p className="text-xs text-[var(--color-sub)]">선생님이 알려준 6자리 코드를 입력하세요</p>
+          </div>
+          <div className="flex gap-2">
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+              placeholder="예: ABC123"
+              className="w-32 rounded-full border border-[var(--color-border)] bg-transparent px-4 py-2 text-sm uppercase outline-none focus:border-[var(--color-accent)]"
+              maxLength={8}
+            />
+            <button type="button" onClick={handleJoin} className="btn-outline">
+              입장
+            </button>
+          </div>
+        </section>
+
+        <section id="my-boards">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-extrabold text-[var(--color-ink)]">
+              내 담벼락 <span className="text-sm font-semibold text-[var(--color-sub)]">{visibleBoards.length}</span>
+            </h2>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setImportOpen(true)} className="btn-outline lg:hidden">
+                📥 가져오기
+              </button>
+              <button type="button" onClick={() => setCreateOpen(true)} className="btn-fill">
+                + 새 담벼락 만들기
+              </button>
+            </div>
+          </div>
+
+          {visibleBoards.length === 0 ? (
+            <div className="rounded-3xl bg-[var(--color-surface)] px-6 py-12 text-center shadow-sm">
+              <div className="mb-2 text-4xl">🪧</div>
+              <p className="text-sm text-[var(--color-sub)]">
+                {search.trim() ? '검색 결과가 없어요.' : '아직 담벼락이 없어요. 새로 만들어 시작해보세요!'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {visibleBoards.map((b) => (
+                <BoardCard
+                  key={b.code}
+                  code={b.code}
+                  title={b.title}
+                  layout={b.layout}
+                  visitedAt={b.visitedAt}
+                  onOpen={() => navigate(`/board/${b.code}`)}
+                  onForget={() => {
                     forgetBoard(b.code)
                     setRecentBoards(getRecentBoards())
                   }}
-                  className="hidden shrink-0 rounded-full px-2.5 py-1 text-xs text-[var(--color-sub)] transition active:scale-90 hover:text-red-500 group-hover:block"
-                  aria-label="목록에서 지우기"
-                >
-                  지우기
-                </button>
-              </li>
-            ))}
-          </ul>
+                />
+              ))}
+            </div>
+          )}
         </section>
-      )}
 
-      <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
-        <h2 className="mb-4 font-bold">새 담벼락 만들기</h2>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="제목 (예: 3반 여름방학 계획)"
-          className="mb-3 w-full rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
-        />
-        <div className="mb-3 grid grid-cols-3 gap-2">
-          <button
-            type="button"
-            onClick={() => setLayout('wall')}
-            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'wall' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
-          >
-            자유 담벼락
-          </button>
-          <button
-            type="button"
-            onClick={() => setLayout('columns')}
-            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'columns' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
-          >
-            세로 테이블
-          </button>
-          <button
-            type="button"
-            onClick={() => setLayout('rows')}
-            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'rows' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
-          >
-            가로 테이블
-          </button>
-        </div>
-        {layout !== 'wall' && (
-          <input
-            value={columnsText}
-            onChange={(e) => setColumnsText(e.target.value)}
-            placeholder="섹션 이름을 쉼표로 구분 (예: 월,화,수)"
-            className="mb-3 w-full rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
-          />
+        {activity.length > 0 && (
+          <section className="rounded-3xl bg-[var(--color-surface)] p-5 shadow-sm">
+            <h2 className="mb-3 font-extrabold text-[var(--color-ink)]">🕒 최근 활동</h2>
+            <ul className="flex flex-col gap-1">
+              {activity.map((a, i) => (
+                <li key={i}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/board/${a.boardCode}`)}
+                    className="flex w-full items-center gap-3 rounded-2xl px-3 py-2 text-left transition hover:bg-black/5 active:scale-[0.99]"
+                  >
+                    <span className="text-lg">{a.attachmentType === 'image' ? '🖼️' : a.attachmentType === 'video' ? '🎬' : '📝'}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm text-[var(--color-ink)]">
+                        <b>{a.author || '익명'}</b>님이 글을 올렸어요{a.text ? ` — ${a.text}` : ''}
+                      </span>
+                      <span className="block text-[11px] text-[var(--color-sub)]">
+                        {a.boardTitle} · {timeAgo(a.createdAt)}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
-        <button type="button" disabled={!title.trim() || creating} onClick={handleCreate} className="btn-fill w-full">
-          {creating ? '만드는 중...' : '만들기'}
-        </button>
-      </section>
 
-      <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
-        <h2 className="mb-4 font-bold">코드로 입장</h2>
-        <div className="flex gap-2">
-          <input
-            value={joinCode}
-            onChange={(e) => setJoinCode(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
-            placeholder="6자리 코드"
-            className="flex-1 rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm uppercase outline-none focus:border-[var(--color-accent)]"
-            maxLength={8}
-          />
-          <button type="button" onClick={handleJoin} className="btn-outline">
-            입장
-          </button>
-        </div>
-      </section>
+        <MoonsuneCredit />
+      </main>
 
-      <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
-        <h2 className="mb-1 font-bold">패들렛에서 가져오기</h2>
-        <p className="mb-4 text-xs leading-relaxed text-[var(--color-sub)]">
-          패들렛은 자동 접속을 막고 있어서, 아래 버튼을 <b>즐겨찾기줄로 드래그</b>해 등록한 뒤 본인 패들렛 보드를 열고
-          클릭하면 글·이미지·섹션이 담긴 파일이 다운로드됩니다. 그 파일을 여기 업로드하면 담벼락이 만들어져요.
-        </p>
-        <BookmarkletLink
-          href={bookmarkletHref()}
-          className="mb-3 inline-flex cursor-grab items-center gap-1.5 rounded-full border-2 border-dashed border-[var(--color-accent)] px-3.5 py-2 text-[13.5px] font-bold text-[var(--color-accent)]"
-        >
-          📥 담벼락으로 가져오기
-        </BookmarkletLink>
-        <p className="mb-3 text-xs text-[var(--color-sub)]">↑ 이 버튼을 즐겨찾기줄로 끌어다 놓으세요 (클릭은 동작하지 않아요)</p>
+      {createOpen && <CreateBoardModal creating={creating} onClose={() => setCreateOpen(false)} onCreate={handleCreate} />}
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) handleImportFile(file)
-            e.target.value = ''
-          }}
+      {importOpen && (
+        <ImportModal
+          importing={importing}
+          importError={importError}
+          apiImporting={apiImporting}
+          apiImportError={apiImportError}
+          savedApiKey={getSavedPadletApiKey()}
+          onClose={() => setImportOpen(false)}
+          onImportFile={handleImportFile}
+          onApiImport={handleApiImport}
         />
-        {importError && <p className="mb-3 text-sm text-red-500">{importError}</p>}
-        <button
-          type="button"
-          disabled={importing}
-          onClick={() => fileInputRef.current?.click()}
-          className="btn-outline w-full border-[var(--color-accent)] text-[var(--color-accent)]"
-        >
-          {importing ? '가져오는 중...' : 'padlet-export.json 업로드'}
-        </button>
-      </section>
-
-      <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
-        <h2 className="mb-1 font-bold">패들렛 API로 가져오기</h2>
-        <p className="mb-4 text-xs leading-relaxed text-[var(--color-sub)]">
-          패들렛 유료 요금제의 API 키가 있다면 북마클릿 없이 바로 가져올 수 있어요. API 키는 이 브라우저에서 패들렛으로 곧장
-          전송되고 문수네집 서버는 거치지 않아요.
-        </p>
-        <input
-          type="password"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          placeholder="API 키"
-          className="mb-2 w-full rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
-        />
-        <label className="mb-3 flex items-center gap-1.5 text-xs text-[var(--color-sub)]">
-          <input type="checkbox" checked={rememberApiKey} onChange={(e) => setRememberApiKey(e.target.checked)} />
-          이 브라우저에 API 키 기억하기
-        </label>
-        <input
-          value={apiBoardId}
-          onChange={(e) => setApiBoardId(e.target.value)}
-          placeholder="보드 ID 또는 패들렛 링크"
-          className="mb-3 w-full rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
-        />
-        {apiImportError && <p className="mb-3 text-sm text-red-500">{apiImportError}</p>}
-        <button
-          type="button"
-          disabled={!apiKey.trim() || !apiBoardId.trim() || apiImporting}
-          onClick={handleApiImport}
-          className="btn-fill w-full"
-        >
-          {apiImporting ? '가져오는 중...' : 'API로 가져오기'}
-        </button>
-      </section>
-
-      <MoonsuneCredit />
+      )}
     </div>
   )
 }

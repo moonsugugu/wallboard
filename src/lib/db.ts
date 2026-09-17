@@ -4,6 +4,8 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  limit,
   onSnapshot,
   orderBy,
   query,
@@ -51,6 +53,13 @@ export function subscribePosts(code: string, cb: (posts: Post[]) => void) {
   return onSnapshot(q, (snap: any) => {
     cb(snap.docs.map((d: any) => ({ id: d.id, ...d.data() }) as Post))
   })
+}
+
+// 홈 화면 "최근 활동"용 1회성 조회. 실시간 구독을 보드 수만큼 열면 서버 부담이 커지므로
+// 여기서는 구독하지 않고 필요할 때 한 번만 읽는다.
+export async function fetchRecentPosts(code: string, count = 3): Promise<Post[]> {
+  const snap: any = await getDocs(query(collection(db, 'boards', code, 'posts'), orderBy('createdAt', 'desc'), limit(count)))
+  return snap.docs.map((d: any) => ({ id: d.id, ...d.data() }) as Post)
 }
 
 export async function addPost(code: string, post: Omit<Post, 'id' | 'createdAt'>, createdAt?: number) {
