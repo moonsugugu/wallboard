@@ -20,7 +20,7 @@ export default function ReactionBar({ postId, reactions, voterKey, onToggle }: P
               key={emoji}
               type="button"
               onClick={() => onToggle(postId, emoji)}
-              className="rounded-full px-1.5 py-0.5 text-sm opacity-40 hover:opacity-100"
+              className="rounded-full px-1.5 py-0.5 text-sm opacity-40 transition active:scale-90 hover:opacity-100"
             >
               {emoji}
             </button>
@@ -31,7 +31,7 @@ export default function ReactionBar({ postId, reactions, voterKey, onToggle }: P
             key={emoji}
             type="button"
             onClick={() => onToggle(postId, emoji)}
-            className={`flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-xs ${
+            className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs transition active:scale-90 ${
               mine ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-black/10 bg-black/5'
             }`}
           >

@@ -25,7 +25,7 @@ function LinkCard({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mb-2 block rounded-md border border-black/10 bg-black/[0.03] px-3 py-2 text-xs text-black/70 hover:bg-black/[0.06]"
+      className="mb-2 block rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2.5 text-xs text-black/70 transition active:scale-[0.98] hover:bg-black/[0.06]"
       onClick={(e) => e.stopPropagation()}
     >
       🔗 {host}
@@ -57,25 +57,15 @@ export default function PostCard({ post, canEdit, onEdit, onDelete, actions }: P
 
   return (
     <div
-      className="group relative mb-4 break-inside-avoid overflow-hidden rounded-lg border border-black/5 shadow-sm transition hover:shadow-md"
+      className="group relative mb-4 break-inside-avoid overflow-hidden rounded-2xl border border-black/5 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_20px_rgba(0,0,0,0.08)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(0,0,0,0.08),0_14px_28px_rgba(0,0,0,0.12)]"
       style={{ background: post.color }}
     >
       {canEdit && (
-        <div className="absolute right-2 top-2 z-10 hidden gap-1 group-hover:flex">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-black/40 text-xs text-white backdrop-blur hover:bg-black/60"
-            aria-label="수정"
-          >
+        <div className="absolute right-2 top-2 z-10 hidden gap-1.5 group-hover:flex">
+          <button type="button" onClick={onEdit} className="btn-icon text-xs" aria-label="수정">
             ✎
           </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-black/40 text-sm text-white backdrop-blur hover:bg-black/60"
-            aria-label="삭제"
-          >
+          <button type="button" onClick={onDelete} className="btn-icon text-sm" aria-label="삭제">
             ×
           </button>
         </div>
@@ -100,7 +90,7 @@ export default function PostCard({ post, canEdit, onEdit, onDelete, actions }: P
               e.stopPropagation()
               setShowComments((v) => !v)
             }}
-            className="shrink-0 rounded-full px-1.5 py-0.5 text-xs text-black/40 hover:text-black/70"
+            className="shrink-0 rounded-full px-2 py-1 text-xs text-black/40 transition active:scale-90 hover:bg-black/5 hover:text-black/70"
           >
             💬 {comments.length > 0 ? comments.length : ''}
           </button>

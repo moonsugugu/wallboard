@@ -25,7 +25,7 @@ import {
   updatePost,
 } from '../lib/db'
 import { getNickname, hasAskedNickname, setNickname } from '../lib/nickname'
-import { rememberBoardVisit } from '../lib/recentBoards'
+import { forgetBoard, rememberBoardVisit } from '../lib/recentBoards'
 import { normalizeBoardCode } from '../lib/roomCode'
 import { getVoterKey } from '../lib/voter'
 import type { Board as BoardDoc, Comment, Post, Reaction, ReactionEmoji } from '../types'
@@ -61,6 +61,7 @@ export default function Board() {
 
   useEffect(() => {
     if (board) rememberBoardVisit({ code: boardCode, title: board.title, layout: board.layout, visitedAt: Date.now() })
+    if (board === null) forgetBoard(boardCode)
   }, [boardCode, board])
 
   const reactionsByPost = useMemo(() => {
@@ -168,7 +169,7 @@ export default function Board() {
         <button
           type="button"
           onClick={() => setSettingsOpen(true)}
-          className="rounded-lg border border-[var(--color-border)] px-3 py-1.5 text-sm font-semibold text-[var(--color-ink)]"
+          className="btn-outline text-[var(--color-ink)]"
         >
           ⚙️ 코드 {boardCode} · 공유/설정
         </button>
@@ -186,7 +187,7 @@ export default function Board() {
         <button
           type="button"
           onClick={() => setModal({ mode: 'add', column: null })}
-          className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-bold text-white shadow-lg"
+          className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-bold text-white shadow-lg transition-transform duration-150 active:scale-90"
           aria-label="포스트잇 추가"
         >
           +

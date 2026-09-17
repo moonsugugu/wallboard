@@ -42,12 +42,12 @@ export default function CommentSection({ postId, comments, isMine, defaultAuthor
           ))}
         </ul>
       )}
-      <div className="flex gap-1">
+      <div className="flex gap-1.5">
         <input
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           placeholder="이름"
-          className="w-14 rounded border border-black/10 bg-white/80 px-1.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
+          className="w-14 rounded-full border border-black/10 bg-white/80 px-2.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
           maxLength={20}
         />
         <input
@@ -55,10 +55,14 @@ export default function CommentSection({ postId, comments, isMine, defaultAuthor
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
           placeholder="댓글 달기..."
-          className="flex-1 rounded border border-black/10 bg-white/80 px-1.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
+          className="flex-1 rounded-full border border-black/10 bg-white/80 px-2.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
           maxLength={300}
         />
-        <button type="button" onClick={submit} className="rounded bg-black/10 px-2 text-xs font-semibold text-black/60">
+        <button
+          type="button"
+          onClick={submit}
+          className="shrink-0 rounded-full bg-black/10 px-3 py-1 text-xs font-semibold text-black/60 transition active:scale-90 hover:bg-black/15"
+        >
           등록
         </button>
       </div>

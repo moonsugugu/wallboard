@@ -46,7 +46,7 @@ export default function BoardSettingsModal({ board, shareUrl, onClose, onSave }:
               type="button"
               onClick={() => setBackgroundKey(bg.key)}
               title={bg.label}
-              className="h-9 rounded-md border-2"
+              className="h-9 rounded-full border-2 transition active:scale-90"
               style={{
                 background: bg.css || 'repeating-linear-gradient(45deg,#ddd,#ddd 4px,#fff 4px,#fff 8px)',
                 borderColor: backgroundKey === bg.key ? 'var(--color-accent)' : 'transparent',
@@ -71,7 +71,7 @@ export default function BoardSettingsModal({ board, shareUrl, onClose, onSave }:
           <button
             type="button"
             onClick={copyLink}
-            className="shrink-0 rounded-lg border border-[var(--color-border)] px-3 py-2 text-xs font-semibold"
+            className="shrink-0 rounded-full border border-[var(--color-border)] px-3.5 py-2 text-xs font-semibold transition active:scale-95"
           >
             {copied ? '복사됨' : '복사'}
           </button>
@@ -81,7 +81,7 @@ export default function BoardSettingsModal({ board, shareUrl, onClose, onSave }:
         </div>
 
         <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="rounded-lg px-4 py-2 text-sm text-[var(--color-sub)] hover:bg-black/5">
+          <button type="button" onClick={onClose} className="btn-outline border-transparent text-[var(--color-sub)]">
             취소
           </button>
           <button
@@ -93,7 +93,7 @@ export default function BoardSettingsModal({ board, shareUrl, onClose, onSave }:
                 backgroundImageUrl: backgroundImageUrl.trim() || undefined,
               })
             }
-            className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white"
+            className="btn-fill"
           >
             저장
           </button>

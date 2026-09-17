@@ -39,5 +39,20 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-ink);
-  font-family: 'Pretendard', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Pretendard', system-ui, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  /* 애플 스타일 버튼: 알약형, 살짝 눌리는 탭 피드백 */
+  .btn-fill {
+    @apply rounded-full bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform duration-150 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+  }
+  .btn-outline {
+    @apply rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-transform duration-150 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+  }
+  .btn-icon {
+    @apply flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition duration-150 hover:bg-black/60 active:scale-90;
+  }
 }

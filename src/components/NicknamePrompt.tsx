@@ -19,15 +19,10 @@ export default function NicknamePrompt({ boardTitle, onDone }: Props) {
           onKeyDown={(e) => e.key === 'Enter' && name.trim() && onDone(name.trim())}
           placeholder="예: 3번 김민수"
           autoFocus
-          className="mb-4 w-full rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-center text-sm outline-none focus:border-[var(--color-accent)]"
+          className="mb-4 w-full rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-center text-sm outline-none focus:border-[var(--color-accent)]"
           maxLength={30}
         />
-        <button
-          type="button"
-          disabled={!name.trim()}
-          onClick={() => onDone(name.trim())}
-          className="mb-2 w-full rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40"
-        >
+        <button type="button" disabled={!name.trim()} onClick={() => onDone(name.trim())} className="btn-fill mb-2 w-full">
           입장하기
         </button>
         <button type="button" onClick={() => onDone('')} className="text-xs text-[var(--color-sub)] hover:underline">

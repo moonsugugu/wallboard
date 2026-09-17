@@ -95,7 +95,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => navigate(`/board/${b.code}`)}
-                  className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left text-sm hover:border-[var(--color-accent)]"
+                  className="flex-1 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-left text-sm transition active:scale-[0.98] hover:border-[var(--color-accent)]"
                 >
                   <span className="font-semibold">{b.title}</span>
                   <span className="ml-2 text-xs text-[var(--color-sub)]">
@@ -108,7 +108,7 @@ export default function Home() {
                     forgetBoard(b.code)
                     setRecentBoards(getRecentBoards())
                   }}
-                  className="hidden shrink-0 px-2 text-xs text-[var(--color-sub)] hover:text-red-500 group-hover:block"
+                  className="hidden shrink-0 rounded-full px-2.5 py-1 text-xs text-[var(--color-sub)] transition active:scale-90 hover:text-red-500 group-hover:block"
                   aria-label="목록에서 지우기"
                 >
                   지우기
@@ -131,21 +131,21 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setLayout('wall')}
-            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'wall' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'wall' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
           >
             자유 담벼락
           </button>
           <button
             type="button"
             onClick={() => setLayout('columns')}
-            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'columns' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'columns' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
           >
             세로 테이블
           </button>
           <button
             type="button"
             onClick={() => setLayout('rows')}
-            className={`rounded-lg border px-2 py-2 text-sm font-medium ${layout === 'rows' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
+            className={`rounded-full border px-2 py-2 text-sm font-medium transition active:scale-95 ${layout === 'rows' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'}`}
           >
             가로 테이블
           </button>
@@ -158,12 +158,7 @@ export default function Home() {
             className="mb-3 w-full rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--color-accent)]"
           />
         )}
-        <button
-          type="button"
-          disabled={!title.trim() || creating}
-          onClick={handleCreate}
-          className="w-full rounded-lg bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-40"
-        >
+        <button type="button" disabled={!title.trim() || creating} onClick={handleCreate} className="btn-fill w-full">
           {creating ? '만드는 중...' : '만들기'}
         </button>
       </section>
@@ -176,14 +171,10 @@ export default function Home() {
             onChange={(e) => setJoinCode(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
             placeholder="6자리 코드"
-            className="flex-1 rounded-lg border border-[var(--color-border)] bg-transparent px-3 py-2 text-sm uppercase outline-none focus:border-[var(--color-accent)]"
+            className="flex-1 rounded-full border border-[var(--color-border)] bg-transparent px-3.5 py-2 text-sm uppercase outline-none focus:border-[var(--color-accent)]"
             maxLength={8}
           />
-          <button
-            type="button"
-            onClick={handleJoin}
-            className="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-semibold"
-          >
+          <button type="button" onClick={handleJoin} className="btn-outline">
             입장
           </button>
         </div>
@@ -219,7 +210,7 @@ export default function Home() {
           type="button"
           disabled={importing}
           onClick={() => fileInputRef.current?.click()}
-          className="w-full rounded-lg border border-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--color-accent)] disabled:opacity-40"
+          className="btn-outline w-full border-[var(--color-accent)] text-[var(--color-accent)]"
         >
           {importing ? '가져오는 중...' : 'padlet-export.json 업로드'}
         </button>

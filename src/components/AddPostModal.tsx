@@ -88,7 +88,7 @@ export default function AddPostModal({ columns, defaultColumn, defaultAuthor, in
               key={tab.type}
               type="button"
               onClick={() => setAttachmentType(tab.type)}
-              className={`flex-1 rounded-lg border px-2 py-1.5 text-xs font-medium ${
+              className={`flex-1 rounded-full border px-2 py-1.5 text-xs font-medium transition active:scale-95 ${
                 attachmentType === tab.type ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'
               }`}
             >
@@ -157,7 +157,7 @@ export default function AddPostModal({ columns, defaultColumn, defaultAuthor, in
               key={c}
               type="button"
               onClick={() => setColor(c)}
-              className="h-7 w-7 rounded-full border-2"
+              className="h-7 w-7 rounded-full border-2 transition active:scale-90"
               style={{ background: c, borderColor: color === c ? 'var(--color-accent)' : 'transparent' }}
               aria-label={`색상 ${c}`}
             />
@@ -165,11 +165,7 @@ export default function AddPostModal({ columns, defaultColumn, defaultAuthor, in
         </div>
 
         <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm text-[var(--color-sub)] hover:bg-black/5"
-          >
+          <button type="button" onClick={onClose} className="btn-outline border-transparent text-[var(--color-sub)]">
             취소
           </button>
           <button
@@ -185,7 +181,7 @@ export default function AddPostModal({ columns, defaultColumn, defaultAuthor, in
                 column: columns.length > 0 ? (column ?? columns[0]) : null,
               })
             }
-            className="rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+            className="btn-fill"
           >
             {initial ? '수정하기' : '올리기'}
           </button>
