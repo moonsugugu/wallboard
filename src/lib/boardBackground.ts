@@ -13,8 +13,8 @@ export function resolveBoardStyle(board: Pick<Board, 'backgroundKey' | 'backgrou
     style.backgroundImage = `url(${board.backgroundImageUrl})`
     style.backgroundSize = 'cover'
     style.backgroundPosition = 'center'
-    style['--color-ink'] = '#1a1712'
-    style['--color-sub'] = '#4a443c'
+    style['--color-ink'] = '#2f2a25'
+    style['--color-sub'] = '#6d6459'
     return style as CSSProperties
   }
 
@@ -22,8 +22,8 @@ export function resolveBoardStyle(board: Pick<Board, 'backgroundKey' | 'backgrou
   if (preset?.css) {
     style.background = preset.css
     const dark = DARK_BACKGROUND_KEYS.has(preset.key)
-    style['--color-ink'] = dark ? '#f2ede4' : '#1a1712'
-    style['--color-sub'] = dark ? '#cfc9bd' : '#4a443c'
+    style['--color-ink'] = dark ? '#f4efe6' : '#2f2a25'
+    style['--color-sub'] = dark ? '#cdc5b8' : '#6d6459'
   }
   return style as CSSProperties
 }

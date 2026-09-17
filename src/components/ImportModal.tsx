@@ -30,19 +30,21 @@ export default function ImportModal({
   const [boardId, setBoardId] = useState('')
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2f2a25]/35 p-4 backdrop-blur-[2px]" onClick={onClose}>
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl bg-[var(--color-surface)] p-6 shadow-xl"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[28px] border border-[var(--color-border)] bg-[var(--color-surface)] p-7 shadow-[0_2px_8px_rgba(74,62,48,0.08),0_40px_80px_-30px_rgba(74,62,48,0.45)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-lg font-bold">패들렛에서 가져오기</h2>
+        <h2 className="mb-5 font-display text-[23px] leading-none text-[var(--color-ink)]">패들렛에서 가져오기</h2>
 
         <div className="mb-4 flex gap-1.5">
           <button
             type="button"
             onClick={() => setTab('bookmarklet')}
             className={`flex-1 rounded-full border px-3 py-2 text-xs font-semibold transition active:scale-95 ${
-              tab === 'bookmarklet' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'
+              tab === 'bookmarklet'
+                ? 'border-[var(--color-accent)] bg-[var(--color-accent-soft)] text-[var(--color-accent)]'
+                : 'border-[var(--color-border)] text-[var(--color-sub)]'
             }`}
           >
             북마클릿 (무료 계정)
@@ -51,7 +53,9 @@ export default function ImportModal({
             type="button"
             onClick={() => setTab('api')}
             className={`flex-1 rounded-full border px-3 py-2 text-xs font-semibold transition active:scale-95 ${
-              tab === 'api' ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10' : 'border-[var(--color-border)]'
+              tab === 'api'
+                ? 'border-[var(--color-accent)] bg-[var(--color-accent-soft)] text-[var(--color-accent)]'
+                : 'border-[var(--color-border)] text-[var(--color-sub)]'
             }`}
           >
             API 키 (유료 계정)
@@ -66,7 +70,7 @@ export default function ImportModal({
             </p>
             <BookmarkletLink
               href={bookmarkletHref()}
-              className="mb-3 inline-flex cursor-grab items-center gap-1.5 rounded-full border-2 border-dashed border-[var(--color-accent)] px-3.5 py-2 text-[13.5px] font-bold text-[var(--color-accent)]"
+              className="mb-4 inline-flex cursor-grab items-center gap-1.5 rounded-full border border-dashed border-[var(--color-accent)] bg-[var(--color-accent-soft)] px-4 py-2.5 text-[13px] font-semibold text-[var(--color-accent)]"
             >
               📥 담벼락으로 가져오기
             </BookmarkletLink>
@@ -81,14 +85,14 @@ export default function ImportModal({
                 e.target.value = ''
               }}
             />
-            {importError && <p className="mb-3 text-sm text-red-500">{importError}</p>}
+            {importError && <p className="mb-3 text-sm text-[var(--color-accent)]">{importError}</p>}
             <button
               type="button"
               disabled={importing}
               onClick={() => fileInputRef.current?.click()}
               className="btn-outline w-full border-[var(--color-accent)] text-[var(--color-accent)]"
             >
-              {importing ? '가져오는 중...' : 'padlet-export.json 업로드'}
+              {importing ? '가져오는 중…' : 'padlet-export.json 업로드'}
             </button>
           </>
         ) : (
@@ -102,7 +106,7 @@ export default function ImportModal({
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="API 키"
-              className="mb-2 w-full rounded-2xl border border-[var(--color-border)] bg-transparent px-4 py-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
+              className="mb-2 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2.5 text-sm outline-none transition focus:border-[var(--color-accent)] focus:bg-[var(--color-surface)]"
             />
             <label className="mb-3 flex items-center gap-1.5 text-xs text-[var(--color-sub)]">
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />이 브라우저에 API 키
@@ -112,16 +116,16 @@ export default function ImportModal({
               value={boardId}
               onChange={(e) => setBoardId(e.target.value)}
               placeholder="보드 ID 또는 패들렛 링크"
-              className="mb-3 w-full rounded-2xl border border-[var(--color-border)] bg-transparent px-4 py-2.5 text-sm outline-none focus:border-[var(--color-accent)]"
+              className="mb-3 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2.5 text-sm outline-none transition focus:border-[var(--color-accent)] focus:bg-[var(--color-surface)]"
             />
-            {apiImportError && <p className="mb-3 text-sm text-red-500">{apiImportError}</p>}
+            {apiImportError && <p className="mb-3 text-sm text-[var(--color-accent)]">{apiImportError}</p>}
             <button
               type="button"
               disabled={!apiKey.trim() || !boardId.trim() || apiImporting}
               onClick={() => onApiImport(apiKey.trim(), boardId.trim(), remember)}
               className="btn-fill w-full"
             >
-              {apiImporting ? '가져오는 중...' : 'API로 가져오기'}
+              {apiImporting ? '가져오는 중…' : 'API로 가져오기'}
             </button>
           </>
         )}

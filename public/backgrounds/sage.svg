@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="s" x1="0" y1="0" x2="0.6" y2="1">
+<stop offset="0" stop-color="#eaefe4"/><stop offset="1" stop-color="#dde5d6"/>
+</linearGradient></defs>
+<rect width="1600" height="1000" fill="url(#s)"/>
+<g fill="#c9d6c0" opacity="0.45">
+<ellipse cx="180" cy="120" rx="130" ry="52" transform="rotate(-28 180 120)"/>
+<ellipse cx="1450" cy="250" rx="150" ry="58" transform="rotate(18 1450 250)"/>
+<ellipse cx="1280" cy="880" rx="170" ry="62" transform="rotate(-12 1280 880)"/>
+<ellipse cx="330" cy="900" rx="120" ry="48" transform="rotate(34 330 900)"/>
+</g>
+<filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+<rect width="1600" height="1000" filter="url(#g)" opacity="0.04"/>
+</svg>

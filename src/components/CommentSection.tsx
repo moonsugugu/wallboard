@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { isSubmitEnter } from '../lib/keys'
 import type { Comment } from '../types'
 
 type Props = {
@@ -21,19 +22,19 @@ export default function CommentSection({ postId, comments, isMine, defaultAuthor
   }
 
   return (
-    <div className="mt-2 border-t border-black/10 pt-2" onClick={(e) => e.stopPropagation()}>
+    <div className="mt-3 border-t border-[#2f2a25]/10 pt-3" onClick={(e) => e.stopPropagation()}>
       {comments.length > 0 && (
         <ul className="mb-2 space-y-1">
           {comments.map((c) => (
-            <li key={c.id} className="group/comment flex items-start justify-between gap-2 text-xs text-black/80">
+            <li key={c.id} className="group/comment flex items-start justify-between gap-2 text-xs leading-relaxed text-[#2f2a25]/75">
               <span>
-                <b className="font-bold text-black">{c.author || '익명'}</b> {c.text}
+                <b className="font-semibold text-[#2f2a25]">{c.author || '익명'}</b> {c.text}
               </span>
               {isMine(c.id) && (
                 <button
                   type="button"
                   onClick={() => onDelete(c.id)}
-                  className="hidden shrink-0 text-black/30 hover:text-black/60 group-hover/comment:inline"
+                  className="hidden shrink-0 text-[#2f2a25]/30 hover:text-[#2f2a25]/60 group-hover/comment:inline"
                 >
                   ×
                 </button>
@@ -47,21 +48,21 @@ export default function CommentSection({ postId, comments, isMine, defaultAuthor
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
           placeholder="이름"
-          className="w-14 rounded-full border border-black/10 bg-white/80 px-2.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
+          className="w-14 rounded-full border border-[#2f2a25]/10 bg-[#fffdf9]/85 px-2.5 py-1 text-xs text-[#2f2a25] placeholder:text-[#2f2a25]/40 outline-none"
           maxLength={20}
         />
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submit()}
+          onKeyDown={(e) => isSubmitEnter(e) && submit()}
           placeholder="댓글 달기..."
-          className="flex-1 rounded-full border border-black/10 bg-white/80 px-2.5 py-1 text-xs text-black placeholder:text-black/40 outline-none"
+          className="flex-1 rounded-full border border-[#2f2a25]/10 bg-[#fffdf9]/85 px-2.5 py-1 text-xs text-[#2f2a25] placeholder:text-[#2f2a25]/40 outline-none"
           maxLength={300}
         />
         <button
           type="button"
           onClick={submit}
-          className="shrink-0 rounded-full bg-black/10 px-3 py-1 text-xs font-semibold text-black/60 transition active:scale-90 hover:bg-black/15"
+          className="shrink-0 rounded-full bg-[#2f2a25]/8 px-3 py-1 text-xs font-semibold text-[#2f2a25]/60 transition active:scale-90 hover:bg-[#2f2a25]/15"
         >
           등록
         </button>

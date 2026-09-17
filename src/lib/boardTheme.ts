@@ -1,21 +1,22 @@
 // 보드 코드에서 카드 색·이모지를 항상 같게 뽑아낸다(같은 보드는 늘 같은 모양).
+// 색은 전부 채도를 낮춘 파스텔 — 카드가 여러 개 나란히 놓여도 화면이 시끄럽지 않게.
 const THEMES = [
-  { emoji: '💡', bg: '#f3e8ff', ink: '#7c3aed' },
-  { emoji: '📖', bg: '#e6f7ec', ink: '#15803d' },
-  { emoji: '📷', bg: '#e0f2fe', ink: '#0369a1' },
-  { emoji: '💬', bg: '#ffe4ef', ink: '#be185d' },
-  { emoji: '🏆', bg: '#fef3c7', ink: '#b45309' },
-  { emoji: '🌱', bg: '#dcfce7', ink: '#047857' },
-  { emoji: '🎨', bg: '#ffedd5', ink: '#c2410c' },
-  { emoji: '⭐', bg: '#e0e7ff', ink: '#4338ca' },
-  { emoji: '🎵', bg: '#fce7f3', ink: '#a21caf' },
-  { emoji: '🔭', bg: '#cffafe', ink: '#0e7490' },
-  { emoji: '✏️', bg: '#fef9c3', ink: '#a16207' },
-  { emoji: '🧩', bg: '#ede9fe', ink: '#6d28d9' },
-  { emoji: '🌏', bg: '#d1fae5', ink: '#065f46' },
-  { emoji: '🍀', bg: '#ecfccb', ink: '#4d7c0f' },
-  { emoji: '🎈', bg: '#ffe4e6', ink: '#be123c' },
-  { emoji: '🚀', bg: '#dbeafe', ink: '#1d4ed8' },
+  { emoji: '💡', bg: '#ece7f2', ink: '#5b4f73' },
+  { emoji: '📖', bg: '#e2ebe1', ink: '#4a6250' },
+  { emoji: '📷', bg: '#e0e9f1', ink: '#41566b' },
+  { emoji: '💬', bg: '#f5e4e5', ink: '#7a4f57' },
+  { emoji: '🏆', bg: '#f3ead6', ink: '#6f5c36' },
+  { emoji: '🌱', bg: '#e1ece3', ink: '#456052' },
+  { emoji: '🎨', bg: '#f4e6da', ink: '#7a5740' },
+  { emoji: '⭐', bg: '#e5e6f1', ink: '#4e5273' },
+  { emoji: '🎵', bg: '#f2e5ec', ink: '#6f4a61' },
+  { emoji: '🔭', bg: '#dfebed', ink: '#3f5f64' },
+  { emoji: '✏️', bg: '#f2edda', ink: '#6b6134' },
+  { emoji: '🧩', bg: '#e9e4f0', ink: '#584b6e' },
+  { emoji: '🌏', bg: '#dfebe6', ink: '#3f6157' },
+  { emoji: '🍀', bg: '#e6edda', ink: '#566337' },
+  { emoji: '🎈', bg: '#f5e3e2', ink: '#7a4c4a' },
+  { emoji: '🚀', bg: '#e2e8f1', ink: '#465774' },
 ] as const
 
 export type BoardTheme = (typeof THEMES)[number]

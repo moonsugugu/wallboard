@@ -2,17 +2,18 @@
 // 유료 요금제 + API 키가 있는 선생님만 쓸 수 있다. 패들렛 API가 CORS를 열어두고 있어서
 // (Access-Control-Allow-Origin: *) 브라우저에서 바로 호출한다 — API 키가 우리 서버를 거치지 않고
 // 사용자 브라우저에서 패들렛으로 곧장 전송되므로 이 앱은 키를 전혀 보지 못한다.
+import { POST_COLOR } from '../types'
 import type { AttachmentType, BoardLayout, PostColor } from '../types'
 import type { ImportResult } from './importPadlet'
 
 const PADLET_COLORS: Record<string, PostColor> = {
-  red: '#ffd6d6',
-  yellow: '#fff3b0',
-  green: '#d6f5e3',
-  blue: '#d6e6ff',
-  purple: '#ecd6ff',
+  red: POST_COLOR.blush,
+  yellow: POST_COLOR.cream,
+  green: POST_COLOR.sage,
+  blue: POST_COLOR.sky,
+  purple: POST_COLOR.lilac,
 }
-const DEFAULT_COLOR: PostColor = '#ffffff'
+const DEFAULT_COLOR: PostColor = POST_COLOR.paper
 
 function stripHtml(html: string | null | undefined): string {
   if (!html) return ''

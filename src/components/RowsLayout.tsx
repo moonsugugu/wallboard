@@ -20,13 +20,13 @@ export default function RowsLayout({ columns, posts, actions, onAddTo }: Props) 
   return (
     <div className="flex flex-col gap-4">
       {columns.map((col) => (
-        <div key={col} className="rounded-xl bg-black/[0.03] p-3">
+        <div key={col} className="rounded-[24px] border border-[var(--color-border)] bg-[var(--color-surface)]/60 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="truncate text-sm font-bold text-[var(--color-ink)]">{col}</h3>
+            <h3 className="truncate font-display text-[17px] text-[var(--color-ink)]">{col}</h3>
             <button
               type="button"
               onClick={() => onAddTo(col)}
-              className="h-6 w-6 rounded-full bg-[var(--color-accent)] text-sm font-bold text-white"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--color-accent-soft)] text-sm font-semibold text-[var(--color-accent)] transition active:scale-90 hover:bg-[var(--color-accent)] hover:text-white"
               aria-label={`${col}에 추가`}
             >
               +

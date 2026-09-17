@@ -1,3 +1,4 @@
+import { normalizePostColor } from '../types'
 import type { AttachmentType, BoardLayout, PostColor } from '../types'
 
 export type ImportedPost = {
@@ -54,7 +55,7 @@ export async function parseExportFile(file: File): Promise<ImportResult> {
       attachmentType,
       attachmentUrl,
       column: typeof post.column === 'string' ? post.column : null,
-      color: typeof post.color === 'string' ? (post.color as PostColor) : '#ffffff',
+      color: normalizePostColor(typeof post.color === 'string' ? post.color : null),
       createdAt: typeof post.createdAt === 'number' ? post.createdAt : Date.now(),
     }
   })

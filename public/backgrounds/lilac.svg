@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+<rect width="1600" height="1000" fill="#efecf5"/>
+<circle cx="420" cy="300" r="340" fill="#e2dcef" opacity="0.75"/>
+<circle cx="1180" cy="700" r="400" fill="#e8e3f2" opacity="0.8"/>
+<circle cx="1400" cy="180" r="220" fill="#f0e6ee" opacity="0.7"/>
+<filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+<rect width="1600" height="1000" filter="url(#g)" opacity="0.04"/>
+</svg>

@@ -149,13 +149,14 @@ export default function Board() {
     : null
 
   if (board === undefined) {
-    return <p className="p-10 text-center text-[var(--color-sub)]">불러오는 중...</p>
+    return <p className="p-16 text-center text-sm text-[var(--color-sub)]">불러오는 중…</p>
   }
   if (board === null || !actions) {
     return (
-      <div className="p-10 text-center">
-        <p className="mb-4 text-[var(--color-sub)]">코드 {boardCode}에 해당하는 담벼락을 찾을 수 없어요.</p>
-        <Link to="/" className="text-[var(--color-accent)] underline">
+      <div className="p-16 text-center">
+        <p className="mb-2 font-display text-[22px] text-[var(--color-ink)]">담벼락을 찾을 수 없어요</p>
+        <p className="mb-6 text-sm text-[var(--color-sub)]">코드 {boardCode}에 해당하는 담벼락이 없습니다.</p>
+        <Link to="/" className="btn-outline inline-block">
           홈으로 가기
         </Link>
       </div>
@@ -165,13 +166,13 @@ export default function Board() {
   const shareUrl = window.location.href
 
   return (
-    <div className="mx-auto min-h-full max-w-6xl px-4 py-6" style={resolveBoardStyle(board)}>
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div className="mx-auto min-h-full max-w-6xl rounded-[32px] px-4 py-8 sm:px-6" style={resolveBoardStyle(board)}>
+      <header className="mb-8 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <Link to="/" className="text-xs text-[var(--color-sub)] hover:underline">
-            ← 홈
+          <Link to="/" className="eyebrow transition hover:text-[var(--color-accent)]">
+            ← 홈으로
           </Link>
-          <h1 className="text-2xl font-extrabold text-[var(--color-ink)]">{board.title}</h1>
+          <h1 className="mt-2 font-display text-[32px] leading-tight text-[var(--color-ink)] sm:text-[38px]">{board.title}</h1>
         </div>
         <button
           type="button"
@@ -193,9 +194,10 @@ export default function Board() {
       <button
         type="button"
         onClick={() => setChatOpen((v) => !v)}
-        className={`fixed bottom-6 z-30 flex h-14 w-14 items-center justify-center rounded-full text-2xl shadow-lg transition-transform duration-150 active:scale-90 ${
+        style={{ boxShadow: 'var(--shadow-lift)' }}
+        className={`fixed bottom-6 z-30 flex h-14 w-14 items-center justify-center rounded-full text-2xl transition-transform duration-150 active:scale-90 ${
           board.layout === 'wall' ? 'right-24' : 'right-6'
-        } ${chatOpen ? 'bg-black/70 text-white' : 'bg-[var(--color-surface)] text-[var(--color-ink)]'}`}
+        } ${chatOpen ? 'bg-[#2f2a25] text-white' : 'bg-[var(--color-surface)] text-[var(--color-ink)]'}`}
         aria-label="실시간 채팅"
       >
         💬
@@ -205,7 +207,8 @@ export default function Board() {
         <button
           type="button"
           onClick={() => setModal({ mode: 'add', column: null })}
-          className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-bold text-white shadow-lg transition-transform duration-150 active:scale-90"
+          style={{ boxShadow: 'var(--shadow-lift)' }}
+          className="fixed bottom-6 right-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)] text-2xl font-light text-white transition-transform duration-150 active:scale-90"
           aria-label="포스트잇 추가"
         >
           +

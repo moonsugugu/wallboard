@@ -1,14 +1,44 @@
 @import 'tailwindcss';
 
-/* 교실에서 쓰는 도구라 시스템 다크모드와 상관없이 항상 밝은 화면으로 고정한다. */
+/*
+ * 담벼락 디자인 톤 — "조용한 무드보드"
+ * 따뜻한 크림 종이 위에 뮤트 파스텔 포스트잇을 올려둔 느낌.
+ * 교실에서 쓰는 도구라 시스템 다크모드와 상관없이 항상 밝은 화면으로 고정한다.
+ */
 :root {
   color-scheme: light;
-  --color-bg: #f7f8fa;
-  --color-surface: #ffffff;
-  --color-ink: #1f2430;
-  --color-sub: #737b8c;
-  --color-accent: #ff7a59;
-  --color-border: #ecedf1;
+
+  /* 바탕 — 차가운 회색 대신 따뜻한 크림 */
+  --color-bg: #f4f1ea;
+  --color-surface: #fffdf9;
+  --color-surface-2: #faf6ef;
+
+  /* 글자 — 순검정 대신 따뜻한 먹색 */
+  --color-ink: #2f2a25;
+  --color-sub: #8c8378;
+
+  /* 액센트 — 쨍한 코랄 대신 가라앉힌 테라코타(흰 글씨 대비 4.6:1) */
+  --color-accent: #b96a58;
+  --color-accent-soft: #f3e3dd;
+
+  --color-border: #e7e0d4;
+
+  /* 포스트잇·칩에 공통으로 쓰는 뮤트 파스텔 */
+  --p-sage: #dfe6d8;
+  --p-blush: #f6ded8;
+  --p-cream: #f3e9d8;
+  --p-sky: #dbe5ee;
+  --p-lilac: #e6e1f0;
+  --p-clay: #ecdfd6;
+
+  /* 그림자 — 넓고 옅게, 색도 따뜻하게 */
+  --shadow-card: 0 1px 2px rgba(74, 62, 48, 0.04), 0 18px 40px -22px rgba(74, 62, 48, 0.28);
+  --shadow-lift: 0 2px 6px rgba(74, 62, 48, 0.06), 0 28px 56px -24px rgba(74, 62, 48, 0.34);
+  --shadow-paper: 0 1px 1px rgba(74, 62, 48, 0.05), 0 12px 28px -16px rgba(74, 62, 48, 0.3);
+
+  --font-display: 'Cormorant Garamond', 'Gowun Batang', 'Nanum Myeongjo', Georgia, serif;
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI',
+    'Malgun Gothic', Roboto, sans-serif;
 }
 
 html,
@@ -19,115 +49,184 @@ body,
 
 body {
   margin: 0;
-  background: var(--color-bg);
   color: var(--color-ink);
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Pretendard', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  /* 한글은 음절 단위로 끊기면 읽기 나쁘다 — 어절(띄어쓰기) 기준으로 줄을 바꾼다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  /* 종이 위에 빛이 번지는 듯한 아주 옅은 워시 */
+  background:
+    radial-gradient(1200px 620px at 12% -12%, #fcf8f0 0%, transparent 62%),
+    radial-gradient(900px 520px at 88% -4%, #f1edf4 0%, transparent 58%),
+    var(--color-bg);
+  /* background-attachment: fixed 는 스크롤 중 크롬에서 페인트가 밀리는 문제가 있어 쓰지 않는다. */
+  background-repeat: no-repeat;
 }
 
 @layer components {
-  /* 애플 스타일 버튼: 알약형, 살짝 눌리는 탭 피드백 */
+  /* 제목용 세리프 */
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    /* 세리프 기본 숫자(올드스타일)는 베이스라인 아래로 내려가 오타처럼 보인다. */
+    font-variant-numeric: lining-nums;
+  }
+
+  /* 자간 넓은 소문자 라벨 — 무드보드 특유의 조용한 머리글 */
+  .eyebrow {
+    @apply text-[10px] font-semibold uppercase text-[var(--color-sub)];
+    letter-spacing: 0.22em;
+  }
+
+  /* 손글씨처럼 기울인 인용 */
+  .quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .card {
+    @apply rounded-[26px] border border-[var(--color-border)] bg-[var(--color-surface)];
+    box-shadow: var(--shadow-card);
+  }
+
+  /* 버튼: 알약형, 살짝 눌리는 탭 피드백 */
   .btn-fill {
-    @apply rounded-full bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform duration-150 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+    @apply rounded-full bg-[var(--color-accent)] px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+    box-shadow: 0 1px 2px rgba(120, 66, 52, 0.18), 0 10px 22px -12px rgba(120, 66, 52, 0.6);
+  }
+  .btn-fill:hover:not(:disabled) {
+    background: #a75c4b;
   }
   .btn-outline {
-    @apply rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-transform duration-150 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+    @apply rounded-full border border-[var(--color-border)] bg-[var(--color-surface)]/70 px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition-all duration-200 active:scale-[0.96] disabled:opacity-40 disabled:active:scale-100;
+  }
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  /* 은은한 보조 버튼 */
+  .btn-soft {
+    @apply rounded-full bg-[var(--color-accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition-all duration-200 active:scale-[0.96];
   }
   .btn-icon {
-    @apply flex h-7 w-7 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition duration-150 hover:bg-black/60 active:scale-90;
+    @apply flex h-7 w-7 items-center justify-center rounded-full bg-[#2f2a25]/35 text-white backdrop-blur-sm transition duration-150 hover:bg-[#2f2a25]/60 active:scale-90;
+  }
+
+  /* 입력칸: 테두리는 머리카락처럼 얇게, 포커스는 액센트로 */
+  .field {
+    @apply w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-2)] px-4 py-2.5 text-sm text-[var(--color-ink)] outline-none transition placeholder:text-[var(--color-sub)]/70;
+  }
+  .field:focus {
+    border-color: var(--color-accent);
+    background: var(--color-surface);
   }
 }
 
-/* 홈 화면 히어로 모션그래픽 */
-@keyframes hero-float-a {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-7deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(-3deg);
+/* 카드 위에 떠 있는 조작 버튼(수정·삭제·폴더 옮기기).
+   마우스로는 hover할 때만 꺼내 보여 화면을 조용하게 두지만,
+   터치 기기에는 hover가 없어서 그대로 두면 버튼을 영영 만질 수 없다. */
+.card-actions {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.group:hover .card-actions,
+.card-actions:focus-within {
+  opacity: 1;
+}
+@media (hover: none) {
+  .card-actions {
+    opacity: 1;
   }
 }
-@keyframes hero-float-b {
-  0%,
-  100% {
-    transform: translateY(0) rotate(6deg);
-  }
-  50% {
-    transform: translateY(-28px) rotate(10deg);
-  }
+
+/* 글만 있는 포스트잇은 기본이 정사각형.
+   내용이 길면 정사각형보다 세로로 길어진다(글이 잘리면 안 되므로).
+   aspect-ratio 는 높이를 '고정'해서 긴 글이 잘리므로 쓰지 않는다.
+   폭이 0인 float 로 '최소 높이 = 폭'만 만들어 둔다(카드의 overflow:hidden 이 float 를 가둔다). */
+.postit-square::before {
+  content: '';
+  float: left;
+  padding-top: 100%;
 }
-@keyframes hero-float-c {
+
+/* 종이 한 장이 살짝 기울어 붙은 느낌 */
+.paper-tilt-1 {
+  transform: rotate(-1.1deg);
+}
+.paper-tilt-2 {
+  transform: rotate(0.9deg);
+}
+.paper-tilt-3 {
+  transform: rotate(-0.5deg);
+}
+
+/* 홈 히어로 — 크게 움직이지 않고 숨 쉬듯 */
+@keyframes drift-a {
   0%,
   100% {
     transform: translateY(0) rotate(-4deg);
   }
   50% {
-    transform: translateY(-14px) rotate(-9deg);
+    transform: translateY(-12px) rotate(-1deg);
   }
 }
-@keyframes hero-fade-up {
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translateY(0) rotate(3deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(6deg);
+  }
+}
+@keyframes drift-c {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(-5deg);
+  }
+}
+@keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-@keyframes hero-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 122, 89, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 0 16px rgba(255, 122, 89, 0);
-  }
-}
-@keyframes hero-glow-drift {
-  0%,
-  100% {
-    transform: translate(-8%, -6%) scale(1);
-  }
-  50% {
-    transform: translate(6%, 4%) scale(1.15);
-  }
-}
-
-.hero-sticker {
-  animation-duration: 6s;
+.drift {
+  animation-duration: 9s;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
 }
-.hero-sticker-a {
-  animation-name: hero-float-a;
+.drift-a {
+  animation-name: drift-a;
 }
-.hero-sticker-b {
-  animation-name: hero-float-b;
-  animation-duration: 7.5s;
+.drift-b {
+  animation-name: drift-b;
+  animation-duration: 11s;
 }
-.hero-sticker-c {
-  animation-name: hero-float-c;
-  animation-duration: 5.5s;
+.drift-c {
+  animation-name: drift-c;
+  animation-duration: 8s;
 }
-.hero-line {
+.rise {
   opacity: 0;
-  animation: hero-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.hero-glow {
-  animation: hero-glow-drift 10s ease-in-out infinite;
-}
-.hero-cta-pulse {
-  animation: hero-pulse 2.4s ease-in-out infinite;
-}
+/* 크게 흐린 원은 정적으로 둔다 — 계속 움직이면 화면 전체가 매 프레임 다시 그려져
+   저사양 노트북에서 스크롤이 끊기고, 다시 그리기가 밀리는 문제도 생긴다. */
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-sticker,
-  .hero-line,
-  .hero-glow,
-  .hero-cta-pulse {
+  .drift,
+  .rise {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
