@@ -57,7 +57,8 @@ export default function Home() {
           {
             author: post.author,
             text: post.text,
-            imageUrl: post.imageUrl || undefined,
+            attachmentType: post.attachmentType,
+            attachmentUrl: post.attachmentUrl,
             color: POST_COLORS.includes(post.color) ? post.color : POST_COLORS[0],
             column: post.column,
           },

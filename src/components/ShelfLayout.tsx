@@ -5,11 +5,12 @@ type Props = {
   columns: string[]
   posts: Post[]
   isMine: (id: string) => boolean
+  onEdit: (id: string) => void
   onDelete: (id: string) => void
   onAddTo: (column: string) => void
 }
 
-export default function ShelfLayout({ columns, posts, isMine, onDelete, onAddTo }: Props) {
+export default function ShelfLayout({ columns, posts, isMine, onEdit, onDelete, onAddTo }: Props) {
   const byColumn = new Map<string, Post[]>(columns.map((c) => [c, []]))
   for (const post of posts) {
     const key = post.column && byColumn.has(post.column) ? post.column : columns[0]
@@ -33,7 +34,13 @@ export default function ShelfLayout({ columns, posts, isMine, onDelete, onAddTo 
           </div>
           <div>
             {(byColumn.get(col) || []).map((post) => (
-              <PostCard key={post.id} post={post} canDelete={isMine(post.id)} onDelete={() => onDelete(post.id)} />
+              <PostCard
+                key={post.id}
+                post={post}
+                canEdit={isMine(post.id)}
+                onEdit={() => onEdit(post.id)}
+                onDelete={() => onDelete(post.id)}
+              />
             ))}
           </div>
         </div>

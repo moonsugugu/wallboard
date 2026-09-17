@@ -9,6 +9,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from './postgres-firestore'
 import { generateBoardCode } from './roomCode'
 import type { Board, BoardLayout, Post } from '../types'
@@ -57,6 +58,10 @@ export async function addPost(code: string, post: Omit<Post, 'id' | 'createdAt'>
 
 export async function removePost(code: string, postId: string) {
   await deleteDoc(doc(db, 'boards', code, 'posts', postId))
+}
+
+export async function updatePost(code: string, postId: string, patch: Partial<Omit<Post, 'id' | 'createdAt'>>) {
+  await updateDoc(doc(db, 'boards', code, 'posts', postId), patch)
 }
 
 const MINE_KEY_PREFIX = 'wallboard:mine:'

@@ -35,14 +35,19 @@ wishes.sort(function(a,b){return (a.attributes.sort_index||0)-(b.attributes.sort
 var posts=wishes.filter(function(w){return w.attributes.published!==false;}).map(function(w){
 var a=w.attributes;
 var link=a.attachment_link;
-var isImage=link?(link.content_category==='photo'||(link.content_type&&link.content_type.indexOf('image/')===0)):!!a.attachment;
 var url=(link&&link.display_url)||a.attachment||null;
-var text=stripHtml(a.body);
-if(url&&!isImage&&text.indexOf(url)===-1)text=text?(text+'\n'+url):url;
+var attachmentType='none';
+if(url){
+if(link&&(link.content_category==='photo'||(link.content_type&&link.content_type.indexOf('image/')===0)))attachmentType='image';
+else if(link&&(link.content_category==='video'||(link.content_type&&link.content_type.indexOf('video/')===0)))attachmentType='video';
+else if(link)attachmentType='link';
+else attachmentType='image';
+}
 return{
 author:a.subject||a.headline||'',
-text:text,
-imageUrl:isImage?url:null,
+text:stripHtml(a.body),
+attachmentType:attachmentType,
+attachmentUrl:url||undefined,
 column:layout==='shelf'?(sectionTitleById[String(a.wall_section_id)]||null):null,
 color:COLORS[a.color]||'#ffffff',
 createdAt:a.created_at?new Date(a.created_at).getTime():Date.now()

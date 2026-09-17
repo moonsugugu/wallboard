@@ -1,9 +1,10 @@
-import type { BoardLayout, PostColor } from '../types'
+import type { AttachmentType, BoardLayout, PostColor } from '../types'
 
 export type ImportedPost = {
   author: string
   text: string
-  imageUrl: string | null
+  attachmentType: AttachmentType
+  attachmentUrl?: string
   column: string | null
   color: PostColor
   createdAt: number
@@ -15,6 +16,8 @@ export type ImportResult = {
   columns: string[]
   posts: ImportedPost[]
 }
+
+const ATTACHMENT_TYPES: AttachmentType[] = ['none', 'image', 'link', 'video']
 
 export async function parseExportFile(file: File): Promise<ImportResult> {
   const text = await file.text()
@@ -37,10 +40,19 @@ export async function parseExportFile(file: File): Promise<ImportResult> {
   const columns = Array.isArray(data.columns) ? data.columns.filter((c): c is string => typeof c === 'string') : []
   const posts: ImportedPost[] = data.posts.map((p) => {
     const post = p as Record<string, unknown>
+    // 예전 북마클릿 파일(imageUrl만 있던 버전) 호환
+    const attachmentUrl = typeof post.attachmentUrl === 'string' ? post.attachmentUrl : typeof post.imageUrl === 'string' ? post.imageUrl : undefined
+    const rawType = post.attachmentType
+    const attachmentType: AttachmentType = ATTACHMENT_TYPES.includes(rawType as AttachmentType)
+      ? (rawType as AttachmentType)
+      : attachmentUrl
+        ? 'image'
+        : 'none'
     return {
       author: typeof post.author === 'string' ? post.author : '',
       text: typeof post.text === 'string' ? post.text : '',
-      imageUrl: typeof post.imageUrl === 'string' ? post.imageUrl : null,
+      attachmentType,
+      attachmentUrl,
       column: typeof post.column === 'string' ? post.column : null,
       color: typeof post.color === 'string' ? (post.color as PostColor) : '#ffffff',
       createdAt: typeof post.createdAt === 'number' ? post.createdAt : Date.now(),
