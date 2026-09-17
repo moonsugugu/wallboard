@@ -5,9 +5,12 @@ import MoonsuneCredit from '../components/MoonsuneCredit'
 import { addPost, createBoard } from '../lib/db'
 import { parseExportFile } from '../lib/importPadlet'
 import { bookmarkletHref } from '../lib/padletBookmarklet'
+import { forgetBoard, getRecentBoards } from '../lib/recentBoards'
 import { normalizeBoardCode } from '../lib/roomCode'
 import type { BoardLayout } from '../types'
 import { POST_COLORS } from '../types'
+
+const LAYOUT_LABEL: Record<BoardLayout, string> = { wall: '자유 담벼락', columns: '세로 테이블', rows: '가로 테이블' }
 
 export default function Home() {
   const navigate = useNavigate()
@@ -22,6 +25,8 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [importing, setImporting] = useState(false)
   const [importError, setImportError] = useState('')
+
+  const [recentBoards, setRecentBoards] = useState(() => getRecentBoards())
 
   async function handleCreate() {
     if (!title.trim() || creating) return
@@ -80,6 +85,39 @@ export default function Home() {
         <h1 className="text-3xl font-extrabold text-[var(--color-ink)]">담벼락</h1>
         <p className="mt-1 text-[var(--color-sub)]">우리 반 실시간 포스트잇 게시판</p>
       </header>
+
+      {recentBoards.length > 0 && (
+        <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
+          <h2 className="mb-4 font-bold">최근 담벼락</h2>
+          <ul className="space-y-2">
+            {recentBoards.map((b) => (
+              <li key={b.code} className="group flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/board/${b.code}`)}
+                  className="flex-1 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left text-sm hover:border-[var(--color-accent)]"
+                >
+                  <span className="font-semibold">{b.title}</span>
+                  <span className="ml-2 text-xs text-[var(--color-sub)]">
+                    {LAYOUT_LABEL[b.layout]} · {b.code}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    forgetBoard(b.code)
+                    setRecentBoards(getRecentBoards())
+                  }}
+                  className="hidden shrink-0 px-2 text-xs text-[var(--color-sub)] hover:text-red-500 group-hover:block"
+                  aria-label="목록에서 지우기"
+                >
+                  지우기
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="rounded-2xl bg-[var(--color-surface)] p-6 shadow-sm">
         <h2 className="mb-4 font-bold">새 담벼락 만들기</h2>

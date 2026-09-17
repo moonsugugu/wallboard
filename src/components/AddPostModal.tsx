@@ -15,6 +15,7 @@ export type PostFormValue = {
 type Props = {
   columns: string[]
   defaultColumn: string | null
+  defaultAuthor?: string
   initial?: PostFormValue
   onClose: () => void
   onSubmit: (post: PostFormValue) => void
@@ -27,8 +28,8 @@ const TABS: { type: AttachmentType; label: string }[] = [
   { type: 'video', label: '🎬 영상' },
 ]
 
-export default function AddPostModal({ columns, defaultColumn, initial, onClose, onSubmit }: Props) {
-  const [author, setAuthor] = useState(initial?.author ?? '')
+export default function AddPostModal({ columns, defaultColumn, defaultAuthor, initial, onClose, onSubmit }: Props) {
+  const [author, setAuthor] = useState(initial?.author ?? defaultAuthor ?? '')
   const [text, setText] = useState(initial?.text ?? '')
   const [color, setColor] = useState<PostColor>(initial?.color ?? POST_COLORS[0])
   const [column, setColumn] = useState<string | null>(initial?.column ?? defaultColumn)

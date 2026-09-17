@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import AddPostModal, { type PostFormValue } from '../components/AddPostModal'
 import BoardSettingsModal from '../components/BoardSettingsModal'
 import ColumnsLayout from '../components/ColumnsLayout'
+import NicknamePrompt from '../components/NicknamePrompt'
 import RowsLayout from '../components/RowsLayout'
 import WallLayout from '../components/WallLayout'
 import type { PostActions } from '../components/postActions'
@@ -23,6 +24,8 @@ import {
   updateBoard,
   updatePost,
 } from '../lib/db'
+import { getNickname, hasAskedNickname, setNickname } from '../lib/nickname'
+import { rememberBoardVisit } from '../lib/recentBoards'
 import { normalizeBoardCode } from '../lib/roomCode'
 import { getVoterKey } from '../lib/voter'
 import type { Board as BoardDoc, Comment, Post, Reaction, ReactionEmoji } from '../types'
@@ -40,6 +43,8 @@ export default function Board() {
   const [reactions, setReactions] = useState<Reaction[]>([])
   const [modal, setModal] = useState<ModalState | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [nickname, setNicknameState] = useState(() => getNickname())
+  const [nicknameAsked, setNicknameAsked] = useState(() => hasAskedNickname())
 
   useEffect(() => {
     const unsubBoard = subscribeBoard(boardCode, setBoard)
@@ -53,6 +58,10 @@ export default function Board() {
       unsubReactions()
     }
   }, [boardCode])
+
+  useEffect(() => {
+    if (board) rememberBoardVisit({ code: boardCode, title: board.title, layout: board.layout, visitedAt: Date.now() })
+  }, [boardCode, board])
 
   const reactionsByPost = useMemo(() => {
     const map = new Map<string, Reaction[]>()
@@ -123,6 +132,7 @@ export default function Board() {
         reactionsByPost,
         commentsByPost,
         voterKey,
+        nickname,
         onToggleReaction: handleToggleReaction,
         onAddComment: handleAddComment,
         onDeleteComment: (commentId) => removeComment(boardCode, commentId),
@@ -187,6 +197,7 @@ export default function Board() {
         <AddPostModal
           columns={board.columns}
           defaultColumn={modal.mode === 'add' ? modal.column : modal.initial.column}
+          defaultAuthor={nickname}
           initial={modal.mode === 'edit' ? modal.initial : undefined}
           onClose={() => setModal(null)}
           onSubmit={handleSubmit}
@@ -201,6 +212,17 @@ export default function Board() {
           onSave={async (patch) => {
             await updateBoard(boardCode, patch)
             setSettingsOpen(false)
+          }}
+        />
+      )}
+
+      {!nicknameAsked && (
+        <NicknamePrompt
+          boardTitle={board.title}
+          onDone={(name) => {
+            setNickname(name)
+            setNicknameState(name)
+            setNicknameAsked(true)
           }}
         />
       )}

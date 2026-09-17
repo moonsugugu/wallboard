@@ -35,7 +35,9 @@ wishes.sort(function(a,b){return (a.attributes.sort_index||0)-(b.attributes.sort
 var posts=wishes.filter(function(w){return w.attributes.published!==false;}).map(function(w){
 var a=w.attributes;
 var link=a.attachment_link;
-var url=(link&&link.display_url)||a.attachment||null;
+// 패들렛 업로드 파일은 link.display_url(서명 없는 영구 링크처럼 보이지만 실제로는 403)이 아니라
+// a.attachment(서명된 링크, 실제 보드 화면이 쓰는 것과 동일)를 써야 이미지가 실제로 열린다.
+var url=a.attachment||(link&&link.display_url)||null;
 var attachmentType='none';
 if(url){
 if(link&&(link.content_category==='photo'||(link.content_type&&link.content_type.indexOf('image/')===0)))attachmentType='image';
