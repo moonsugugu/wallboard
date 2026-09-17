@@ -118,7 +118,7 @@ export default function Home() {
       <main className="flex min-w-0 flex-1 flex-col gap-6">
         <HomeGreeting nickname={nickname} search={search} onSearch={setSearch} />
 
-        <section className="flex flex-col gap-3 rounded-3xl bg-[var(--color-surface)] p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <section className="flex flex-col gap-3 rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-bold text-[var(--color-ink)]">코드로 입장</p>
             <p className="text-xs text-[var(--color-sub)]">선생님이 알려준 6자리 코드를 입력하세요</p>
@@ -154,7 +154,7 @@ export default function Home() {
           </div>
 
           {visibleBoards.length === 0 ? (
-            <div className="rounded-3xl bg-[var(--color-surface)] px-6 py-12 text-center shadow-sm">
+            <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-12 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
               <div className="mb-2 text-4xl">🪧</div>
               <p className="text-sm text-[var(--color-sub)]">
                 {search.trim() ? '검색 결과가 없어요.' : '아직 담벼락이 없어요. 새로 만들어 시작해보세요!'}
@@ -181,7 +181,7 @@ export default function Home() {
         </section>
 
         {activity.length > 0 && (
-          <section className="rounded-3xl bg-[var(--color-surface)] p-5 shadow-sm">
+          <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
             <h2 className="mb-3 font-extrabold text-[var(--color-ink)]">🕒 최근 활동</h2>
             <ul className="flex flex-col gap-1">
               {activity.map((a, i) => (

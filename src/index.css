@@ -1,32 +1,14 @@
 @import 'tailwindcss';
 
+/* 교실에서 쓰는 도구라 시스템 다크모드와 상관없이 항상 밝은 화면으로 고정한다. */
 :root {
-  --color-bg: #f4f1ea;
+  color-scheme: light;
+  --color-bg: #f7f8fa;
   --color-surface: #ffffff;
-  --color-ink: #2b2620;
-  --color-sub: #7a7268;
+  --color-ink: #1f2430;
+  --color-sub: #737b8c;
   --color-accent: #ff7a59;
-  --color-border: #e4ded2;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-bg: #1c1a17;
-    --color-surface: #26231f;
-    --color-ink: #f2ede4;
-    --color-sub: #b3aa9c;
-    --color-accent: #ff8f6f;
-    --color-border: #3a352e;
-  }
-}
-
-:root[data-theme='dark'] {
-  --color-bg: #1c1a17;
-  --color-surface: #26231f;
-  --color-ink: #f2ede4;
-  --color-sub: #b3aa9c;
-  --color-accent: #ff8f6f;
-  --color-border: #3a352e;
+  --color-border: #ecedf1;
 }
 
 html,

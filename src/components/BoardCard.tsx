@@ -20,9 +20,9 @@ export default function BoardCard({ code, title, layout, visitedAt, onOpen, onFo
       <button
         type="button"
         onClick={onOpen}
-        className="w-full overflow-hidden rounded-3xl bg-[var(--color-surface)] text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98]"
+        className="w-full overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] text-left shadow-[0_1px_2px_rgba(16,24,40,0.04)] transition-all duration-200 hover:-translate-y-1 hover:border-transparent hover:shadow-[0_8px_24px_rgba(16,24,40,0.10)] active:scale-[0.98]"
       >
-        <div className="flex h-24 items-center justify-center text-4xl" style={{ background: theme.bg }}>
+        <div className="flex h-28 items-center justify-center text-4xl" style={{ background: theme.bg }}>
           {theme.emoji}
         </div>
         <div className="p-4">

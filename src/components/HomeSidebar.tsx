@@ -38,7 +38,7 @@ export default function HomeSidebar({ active, onNavigate }: Props) {
         ))}
       </nav>
 
-      <div className="mt-auto rounded-3xl bg-[var(--color-surface)] p-4 text-center shadow-sm">
+      <div className="mt-auto rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 text-center shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
         <div className="mb-1 text-3xl">🧸</div>
         <p className="text-xs leading-relaxed text-[var(--color-sub)]">
           작은 생각도

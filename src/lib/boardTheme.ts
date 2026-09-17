@@ -8,6 +8,14 @@ const THEMES = [
   { emoji: '🌱', bg: '#dcfce7', ink: '#047857' },
   { emoji: '🎨', bg: '#ffedd5', ink: '#c2410c' },
   { emoji: '⭐', bg: '#e0e7ff', ink: '#4338ca' },
+  { emoji: '🎵', bg: '#fce7f3', ink: '#a21caf' },
+  { emoji: '🔭', bg: '#cffafe', ink: '#0e7490' },
+  { emoji: '✏️', bg: '#fef9c3', ink: '#a16207' },
+  { emoji: '🧩', bg: '#ede9fe', ink: '#6d28d9' },
+  { emoji: '🌏', bg: '#d1fae5', ink: '#065f46' },
+  { emoji: '🍀', bg: '#ecfccb', ink: '#4d7c0f' },
+  { emoji: '🎈', bg: '#ffe4e6', ink: '#be123c' },
+  { emoji: '🚀', bg: '#dbeafe', ink: '#1d4ed8' },
 ] as const
 
 export type BoardTheme = (typeof THEMES)[number]
