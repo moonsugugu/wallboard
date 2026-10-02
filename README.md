@@ -178,7 +178,7 @@ has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is pres
 
 > 이 저장소를 고치기 전에 **[moonsugugu/coderule](https://github.com/moonsugugu/coderule)** 을 먼저 읽으세요. 사람과 AI 모두 지킵니다.
 
-**핵심 다섯 가지**
+**핵심 여섯 가지**
 
 1. **30명 반 하나의 전송량은 1Mbps 이하.** `메시지 크기(바이트) × 초당 횟수 × 받는 사람 수 × 8 ÷ 1,000,000` 으로 완료 전에 잰다.
    2026-10-02 고조선이 30명 방 하나에 22Mbps를 써서, 20개 반이 몰리자 집 업로드(약 170Mbps)가 막혀 모든 앱이 끊겼다.
@@ -186,6 +186,7 @@ has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is pres
 3. **인원 제한에 선생님을 세지 않는다. IP당 제한을 걸지 않는다**(학교는 전교생이 공인 IP 하나).
 4. **방마다 타이머 따로, 끊긴 학생은 60초 이상 같은 자리 유지,** 서버는 `HOST`·`PORT` 환경변수(기본 `127.0.0.1`), 요청 경로에 동기 I/O 금지.
 5. **배포·앱 재시작·터널 재시작은 서버 관리자에게 물어보고 한다.** 배포 = 서버 재시작 = 진행 중인 방이 전부 사라진다. (README 같은 `.md` 문서만 바꾼 push는 재시작 없이 반영된다)
+6. **서버가 바쁘면 끊지 말고 느리게(과부하 보호, 규칙 19).** 이 앱의 데이터·실시간은 backend(`api.moonsunezip.com`)가 맡는다. backend 가 쓰기를 적응형 대기열로 나눠 처리하고, 바쁜 동안 실시간 연결을 끊지 않는다. 화면은 쓰기 503 을 받으면 1~5초 간격으로 늘려 가며 다시 시도하고, 같은 요청을 곧바로 반복하지 않는다.
 
 **이 저장소 점검(2026-10-02):** 빌드 파일에 캐시 헤더가 없어 학생이 들어올 때마다 집 서버가 JS·CSS를 보냈습니다. `/assets/`는 1년 캐시(Cloudflare가 대신 보냄), html은 no-cache로 바꿨습니다.
 <!-- CODERULE:END -->
